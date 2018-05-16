@@ -1,14 +1,14 @@
 TARGET := p1a
-SRCS := p1a.cpp
+SRCS := $(TARGET).cpp
 CC := g++
-INCLUDES := ../includes 
+INCLUDES := ../../includes 
 CFLAGS := -Wall -Wextra -Wno-deprecated $(foreach incdir, $(INCLUDES), -I$(incdir))
 LFLAGS := 
 
 .PHONY: clean
 
 all: 
-	$(CC) $(CFLAGS) $(LFLAGS) -o $(TARGET) $(SRCS)
+	$(CC) $(CFLAGS) $(LFLAGS) -o $(TARGET).out $(SRCS)
 
 clean:
 	rm $(TARGET)

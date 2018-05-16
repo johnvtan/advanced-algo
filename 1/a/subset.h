@@ -25,12 +25,19 @@ Subset::Subset(int m) {
 	max = m;
 }
 
+bool Subset::hasNext(void) {
+	if (items.size() == 1 && items[0] == max - 1) {
+		return false;
+	}
+	return true;
+}
+
 vector <int> Subset::nextSubset(void) {
 	if (items.size() == 0) {
 		items.push_back(0);
 		return items;
 	}
-	if (items.size() == 1 && items[0] == max - 1) {
+	if (!hasNext()) {
 		throw NoSuchElementError("No remaining subsets");
 	}
 	if (items.back() == max - 1) {
@@ -40,13 +47,6 @@ vector <int> Subset::nextSubset(void) {
 		items.push_back(items.back() + 1);
 	}
 	return items;
-}
-
-bool Subset::hasNext(void) {
-	if (items.size() == 1 && items[0] == max - 1) {
-		return false;
-	}
-	return true;
 }
 
 #endif
