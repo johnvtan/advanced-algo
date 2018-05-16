@@ -91,7 +91,7 @@ int main(int argc, char **argv)
    if (2 != argc) 
    {
       cout << "Error: need to include path to input as argument.\n"
-           << "\tp1a <input-file>\n";
+           << "\tp1a.out <input-file>\n";
       exit(1);
    }
 

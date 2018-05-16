@@ -4,6 +4,9 @@
 #include <limits.h>
 #include "d_except.h"
 #include <fstream>
+#include <cmath>
+#include <stdlib.h>
+#include <climits>
 
 #include <boost/graph/adjacency_list.hpp>
 
@@ -11,6 +14,14 @@
 
 using namespace std;
 using namespace boost;
+
+class nullPtrError : public baseException
+{
+    public:
+        nullPtrError(const string& msg = ""):
+            baseException(msg)
+        {}
+};
 
 int const NONE = -1;  // Used to represent a node that does not exist
 
@@ -26,6 +37,7 @@ struct VertexProperties
     bool visited;
     bool marked;
     int weight;
+    int color;
 };
 
 // Create a struct to hold properties for each edge
@@ -67,7 +79,92 @@ void setNodeWeights(Graph &g, int w)
     }
 }
 
-int main()
+void incIntArray(unsigned int *array, int size) {
+    if (NULL == array || 0 == size) {
+        throw nullPtrError("Passed in null ptr or size 0 to incIntArray\n");
+    }
+    bool carry = false;
+    array[0]++;
+    for (int i = 0; i < size; i++) {
+        if (carry == true) {
+            array[i]++;
+        }
+        if (array[i] == 0) {
+            carry = true;
+        } else {
+            break;
+        }
+    }
+
+}
+
+#define UINT_BITS (8 * sizeof(unsigned int))
+
+bool checkIfDone(unsigned int *array, int size, int numBits) {
+    unsigned int mask = UINT_MAX;
+    for (int i = 0; i < size; i++) {
+        if (numBits < UINT_BITS) {
+            mask = (1 << numBits) - 1;
+        }
+        if (array[i] & mask) {
+            return false;
+        }
+        numBits -= UINT_BITS;
+    }
+    return true;
+}
+
+void colorGraph(Graph &g, unsigned int *colorArray, int size, int colorBits) {
+    int currColor = -1;
+    int mask = (1 << colorBits) - 1;
+    int leftover = 0;
+    int carryShift = 0;
+    int i = 0;          // index into colorArray
+    int nBits = 0;      // bit index into current int
+    bool next = false;  //  
+    for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
+        currColor = (colorArray[i] >> (nBits + carryShift)) & mask;
+        nBits += colorBits;
+        leftover = UINT_BITS - nBits;
+        if (leftover < colorBits) {
+            // crossing integer boundary
+            carryShift = colorBits - leftover;
+            currColor |= (array[++i] << carryShift) & mask;
+        } else {
+            carryShift = 0;
+        }
+        g[*vItr].color = //something
+    }
+}
+
+int exhaustiveColoring(Graph &g, int numColors, int t) {
+    int colorBits = ceil(log2(1.0*numColors));
+    cout << "Color Bits: " << colorBits << endl;
+
+    // this should be the highest value that we
+    int totalBits = num_vertices(g) * colorBits;
+    cout << "Total bits for graph: " << totalBits << endl;
+    
+    int numInts = totalBits % UINT_BITS ? totalBits / UINT_BITS + 1 : totalBits / UINT_BITS;
+    cout << "Num ints needed: " << numInts << endl;
+
+    int searchSpaceSize = numInts * sizeof(unsigned int);
+    unsigned int *searchSpace = (unsigned int*)calloc(1, searchSpaceSize);
+    unsigned int *bestSolution = (unsigned int*)calloc(1, searchSpaceSize);
+    if (NULL == searchSpace || NULL == bestSolution) {
+        cout << "Malloc failed!\n";
+        exit(1);
+    }  
+
+    while (!checkIfDone(searchSpace, searchSpaceSize, totalBits)) {
+        // assign color to each node in graph
+        // increment searchSpace
+        // track the least number of conflicts
+
+    }
+}
+
+int main(int argc, char **argv)
 {
     char x;
     ifstream fin;
@@ -75,13 +172,16 @@ int main()
     
     // Read the name of the graph from the keyboard or
     // hard code it here for testing.
-    
-    fileName = "/Users/wmeleis/2560-code/tree2/tree/graph1.txt";
+    if (2 != argc) {
+      cout << "Error: need to include path to input as argument.\n"
+           << "\tp1b.out <input-file>\n";
+      exit(1);
+    }
     
     //   cout << "Enter filename" << endl;
     //   cin >> fileName;
     
-    fin.open(fileName.c_str());
+    fin.open(argv[1]);
     if (!fin)
     {
         cerr << "Cannot open " << fileName << endl;
