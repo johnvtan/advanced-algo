@@ -95,7 +95,6 @@ void incIntArray(unsigned int *array, int size) {
             break;
         }
     }
-
 }
 
 #define UINT_BITS (8 * sizeof(unsigned int))
@@ -114,27 +113,30 @@ bool checkIfDone(unsigned int *array, int size, int numBits) {
     return true;
 }
 
-void colorGraph(Graph &g, unsigned int *colorArray, int size, int colorBits) {
+int colorGraph(Graph &g, unsigned int *colorArray, int size, int colorBits, int maxColor) {
     int currColor = -1;
     int mask = (1 << colorBits) - 1;
     int leftover = 0;
-    int carryShift = 0;
     int i = 0;          // index into colorArray
     int nBits = 0;      // bit index into current int
-    bool next = false;  //  
+    pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
     for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
-        currColor = (colorArray[i] >> (nBits + carryShift)) & mask;
-        nBits += colorBits;
+        currColor = (colorArray[i] >> nBits) & mask;
         leftover = UINT_BITS - nBits;
         if (leftover < colorBits) {
             // crossing integer boundary
-            carryShift = colorBits - leftover;
-            currColor |= (array[++i] << carryShift) & mask;
+            nBits = colorBits - leftover;
+            currColor |= (colorArray[++i] << leftover) & mask;
         } else {
-            carryShift = 0;
+            nBits += colorBits;
         }
-        g[*vItr].color = //something
+        if (currColor > maxColor) {
+            return -1;
+        }
+        g[*vItr].color = currColor;
+        cout << "Node (" << *vItr << ") color = " << currColor << endl;
     }
+    return 0;
 }
 
 int exhaustiveColoring(Graph &g, int numColors, int t) {
@@ -156,11 +158,17 @@ int exhaustiveColoring(Graph &g, int numColors, int t) {
         exit(1);
     }  
 
+    incIntArray(searchSpace, searchSpaceSize);
     while (!checkIfDone(searchSpace, searchSpaceSize, totalBits)) {
         // assign color to each node in graph
         // increment searchSpace
         // track the least number of conflicts
-
+        cout << "Next coloring" << endl;
+        if (0 == colorGraph(g, searchSpace, searchSpaceSize, colorBits, numColors-1)) {
+            // check if legal color and update best solution
+            cout << "colored" << endl;
+        }
+        incIntArray(searchSpace, searchSpaceSize);
     }
 }
 
