@@ -139,6 +139,25 @@ int colorGraph(Graph &g, unsigned int *colorArray, int size, int colorBits, int 
     return 0;
 }
 
+bool isValidColoring(Graph &g) {
+    pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+
+    // check each node's color in the graph and its neighbor's colors
+    for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
+        pair<Graph::adjaceny_iterator, Graph::adjaceny_iterator> adjItrRange = adjacent_vertices(g[*vItr], g);
+
+        // loop through each neighbor for the current node and check the colors
+        for (Graph::vertex_iterator adjItr= adjItrRange.first; adjItr != adjItrRange.second; ++adjItr) {
+            // if the current node has the same color as a neighbor, we have an illegal coloring
+            if (g[*vItr].color == g[*adjItr].color) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 int exhaustiveColoring(Graph &g, int numColors, int t) {
     int colorBits = ceil(log2(1.0*numColors));
     cout << "Color Bits: " << colorBits << endl;
