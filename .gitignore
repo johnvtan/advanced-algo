@@ -2,3 +2,5 @@
 *.out
 1/b/output/
 1/a/output/
+*/submission/
+*.tar.gz
