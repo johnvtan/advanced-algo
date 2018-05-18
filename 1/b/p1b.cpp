@@ -38,6 +38,8 @@ struct VertexProperties
     bool marked;
     int weight;
     int color;
+
+    VertexProperties() : color(0) {}
 };
 
 // Create a struct to hold properties for each edge
@@ -79,116 +81,119 @@ void setNodeWeights(Graph &g, int w)
     }
 }
 
-void incIntArray(unsigned int *array, int size) {
-    if (NULL == array || 0 == size) {
-        throw nullPtrError("Passed in null ptr or size 0 to incIntArray\n");
-    }
-    bool carry = false;
-    array[0]++;
-    for (int i = 0; i < size; i++) {
-        if (carry == true) {
-            array[i]++;
-        }
-        if (array[i] == 0) {
-            carry = true;
+// function to generate another possible combination of colors in the graph
+void incrementColors(Graph &g, int maxColor) {
+    pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+    for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
+        
+        // for each node in the graph, increment the color value
+        g[*vItr].color++;
+
+        // if the color is larger than max color, reset this node's color and increment
+        // the next node's color
+        if (g[*vItr].color > maxColor) {
+            g[*vItr].color = 0;
         } else {
+            // if the node's color didn't need to be reset, then we don't need to carry
+            // over the increment and can stop the iteration here
             break;
         }
     }
 }
 
-#define UINT_BITS (8 * sizeof(unsigned int))
-
-bool checkIfDone(unsigned int *array, int size, int numBits) {
-    unsigned int mask = UINT_MAX;
-    for (int i = 0; i < size; i++) {
-        if (numBits < UINT_BITS) {
-            mask = (1 << numBits) - 1;
-        }
-        if (array[i] & mask) {
+// checks if we've tried every possible coloring for the graph
+bool checkIfDone(Graph &g, int maxColor) {
+    pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+    for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
+        
+        // because we generate combinations by incrementing, we know that we are done
+        // when every node's color is the maxColor value
+        if (g[*vItr].color != maxColor) {
             return false;
         }
-        numBits -= UINT_BITS;
     }
     return true;
 }
 
-int colorGraph(Graph &g, unsigned int *colorArray, int size, int colorBits, int maxColor) {
-    int currColor = -1;
-    int mask = (1 << colorBits) - 1;
-    int leftover = 0;
-    int i = 0;          // index into colorArray
-    int nBits = 0;      // bit index into current int
-    pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
-    for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
-        currColor = (colorArray[i] >> nBits) & mask;
-        leftover = UINT_BITS - nBits;
-        if (leftover < colorBits) {
-            // crossing integer boundary
-            nBits = colorBits - leftover;
-            currColor |= (colorArray[++i] << leftover) & mask;
-        } else {
-            nBits += colorBits;
+int numConflicts(Graph &g) {
+    pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
+    Graph::vertex_descriptor v1, v2;
+    int count = 0;
+    // Loop over all edges in the graph
+    for (Graph::edge_iterator eItr= eItrRange.first; eItr != eItrRange.second; ++eItr) {
+        
+        // count the number of conflicts by checking the source and target nodes
+        // of each edge in the graph and seeing if their colors match
+        v1 = source(*eItr, g);
+        v2 = target(*eItr, g);
+        if (g[v1].color == g[v2].color) {
+            count++;
         }
-        if (currColor > maxColor) {
-            return -1;
-        }
-        g[*vItr].color = currColor;
-        cout << "Node (" << *vItr << ") color = " << currColor << endl;
     }
-    return 0;
+    return count;
 }
 
-bool isValidColoring(Graph &g) {
+// helper function to print out graph coloring
+void printColors(Graph &g) {
+    cout << "---------------New Coloring---------------" << endl;
     pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
-
-    // check each node's color in the graph and its neighbor's colors
     for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
-        pair<Graph::adjaceny_iterator, Graph::adjaceny_iterator> adjItrRange = adjacent_vertices(g[*vItr], g);
-
-        // loop through each neighbor for the current node and check the colors
-        for (Graph::vertex_iterator adjItr= adjItrRange.first; adjItr != adjItrRange.second; ++adjItr) {
-            // if the current node has the same color as a neighbor, we have an illegal coloring
-            if (g[*vItr].color == g[*adjItr].color) {
-                return false;
-            }
-        }
+        cout << "Node (" << *vItr << "): " << g[*vItr].color << endl;
     }
+}
 
-    return true;
+void printSolution(Graph &g, int numConflicts)
+{
+    cout << "Total Conflicts: " << numConflicts << endl;
+
+    for (int counter = 0; counter < num_vertices(g); counter++)
+    {
+        cout << counter << ": " << g[counter].color << endl;
+
+    }
 }
 
 int exhaustiveColoring(Graph &g, int numColors, int t) {
-    int colorBits = ceil(log2(1.0*numColors));
-    cout << "Color Bits: " << colorBits << endl;
+    int leastConflicts = INT_MAX;
+    int currNumConflicts = INT_MAX;
+    int bestColors[num_vertices(g)] = {0};
+    clock_t start_time;
+    start_time = clock();
+    double total_time = 0;
 
-    // this should be the highest value that we
-    int totalBits = num_vertices(g) * colorBits;
-    cout << "Total bits for graph: " << totalBits << endl;
-    
-    int numInts = totalBits % UINT_BITS ? totalBits / UINT_BITS + 1 : totalBits / UINT_BITS;
-    cout << "Num ints needed: " << numInts << endl;
-
-    int searchSpaceSize = numInts * sizeof(unsigned int);
-    unsigned int *searchSpace = (unsigned int*)calloc(1, searchSpaceSize);
-    unsigned int *bestSolution = (unsigned int*)calloc(1, searchSpaceSize);
-    if (NULL == searchSpace || NULL == bestSolution) {
-        cout << "Malloc failed!\n";
-        exit(1);
-    }  
-
-    incIntArray(searchSpace, searchSpaceSize);
-    while (!checkIfDone(searchSpace, searchSpaceSize, totalBits)) {
-        // assign color to each node in graph
-        // increment searchSpace
-        // track the least number of conflicts
-        cout << "Next coloring" << endl;
-        if (0 == colorGraph(g, searchSpace, searchSpaceSize, colorBits, numColors-1)) {
-            // check if legal color and update best solution
-            cout << "colored" << endl;
+    // we break out of while loop if leastConflicts == 0 since we know
+    // we can't do better than 0 conflicts
+    while (!checkIfDone(g, numColors - 1) and leastConflicts > 0) {
+        
+        // we search over the entire space by using incrementColors
+        incrementColors(g, numColors - 1);
+        currNumConflicts = numConflicts(g);
+        if (currNumConflicts < leastConflicts) {
+            // if the current coloring has less conflicts than our previous best
+            // then we set leastConflicts and store the colors of each node in bestColors
+            leastConflicts = currNumConflicts;
+            
+            int i = 0;
+            pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+            for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
+                bestColors[i++] = g[*vItr].color;
+            }
         }
-        incIntArray(searchSpace, searchSpaceSize);
+
+        // checking if we go over time limit
+        total_time = (clock() - start_time) / (double) CLOCKS_PER_SEC;
+        if (total_time >= t) {
+            break;
+        }
     }
+
+    // print out best solution
+    //printColors(g);
+    for (int i = 0; i < num_vertices(g); i++) {
+        g[i].color = bestColors[i];
+    }
+    printSolution(g, leastConflicts);
+    return leastConflicts;
 }
 
 int main(int argc, char **argv)
@@ -217,22 +222,14 @@ int main(int argc, char **argv)
     
     try
     {
-        cout << "Reading graph" << endl;
+        //cout << "Reading graph" << endl;
         Graph g;
         int numColors;
         int numConflicts = -1;
         fin >> numColors;
         initializeGraph(g,fin);
         
-        cout << "Num nodes: " << num_vertices(g) << endl;
-        cout << "Num edges: " << num_edges(g) << endl;
-        cout << endl;
-        
-        // cout << g;
-        
         numConflicts = exhaustiveColoring(g, numColors, 600);
-        //printSolution(g, numConflicts);
-        
     }
     catch (indexRangeError &ex)
     {
