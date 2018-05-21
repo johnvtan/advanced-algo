@@ -39,7 +39,7 @@ struct VertexProperties
     int weight;
     int color;
 
-    VertexProperties() : color(0) {}
+    VertexProperties() : color(-1) {}
 };
 
 // Create a struct to hold properties for each edge
@@ -119,7 +119,16 @@ void printSolution(Graph &g, int numConflicts)
     }
 }
 
+int findMaxmimumDegreeNode(Graph &g) {
+    pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+    for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
+        cout << "Node (" << *vItr << "): " << g[*vItr].color << endl;
+        adjacent_vertices();
+    }
+}
+
 int exhaustiveColoring(Graph &g, int numColors, int t) {
+    findMaxmimumDegreeNode(g);
 
     return leastConflicts;
 }
