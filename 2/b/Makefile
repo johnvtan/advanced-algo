@@ -1,4 +1,4 @@
-TARGET := p1a
+TARGET := p2b
 SRCS := $(TARGET).cpp
 CC := g++
 INCLUDES := ../../includes 
