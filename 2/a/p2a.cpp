@@ -18,7 +18,18 @@ using namespace std;
 #include "knapsack.h"
 
 void greedyKnapsack(knapsack &k) {
-	return;
+	int nextIndex = -1;
+	while (!k.allItemsOff()) {
+		nextIndex = k.getMaxRatioIndex();
+		if (k.getCost() + k.getCost(nextIndex) > k.getCostLimit()) {
+			k.setRatioOff(nextIndex);
+			cout << "Can't put " << nextIndex << " in knapsack" << endl;
+		} else {
+			k.select(nextIndex);
+			cout << "Selected: " << nextIndex << endl;
+		}
+	}
+	k.printSolution();
 }
 
 int main(int argc, char **argv)

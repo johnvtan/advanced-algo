@@ -1,6 +1,5 @@
 // Knapsack class
 // Version f08.1
-
 class knapsack
 {
    public:
@@ -18,12 +17,16 @@ class knapsack
       bool isSelected(int) const;
       void selectList(vector <int> list);
       void unSelectAll(void);
+      int getMaxRatioIndex(void);
+      void setRatioOff(int index);
+      bool allItemsOff(void);
 
    private:
       int numObjects;
       int costLimit;
       vector<int> value;
       vector<int> cost;
+      vector<float> valueCostRatio;
       vector<bool> selected;
       int totalValue;
       int totalCost;
@@ -43,15 +46,16 @@ knapsack::knapsack(ifstream &fin)
    value.resize(n);
    cost.resize(n);
    selected.resize(n);
+   valueCostRatio.resize(n);
    
    for (int i = 0; i < n; i++)
    {
       fin >> j >> v >> c;
       value[j] = v;
       cost[j] = c;
+      valueCostRatio[j] = (1.0 * v) / c;
       unSelect(j);
    }
-
    totalValue = 0;
    totalCost = 0;
 }
@@ -184,6 +188,7 @@ void knapsack::select(int i)
       selected[i] = true;
       totalCost = totalCost + getCost(i);
       totalValue = totalValue + getValue(i);
+      setRatioOff(i);
    }
 }
 
@@ -222,4 +227,33 @@ void knapsack::unSelectAll(void) {
          unSelect(i);
       }
    }
+}
+
+// returns index of highest ratio item in list
+int knapsack::getMaxRatioIndex(void) {
+   int max = 0;
+   for (int i = 1; i < getNumObjects(); i++) {
+      if (valueCostRatio[i] > valueCostRatio[max]) {
+         max = i;
+      }
+   }
+   return max;
+}
+
+// sets index to -1.0 in valueCostRatio
+void knapsack::setRatioOff(int index) {
+   if (index < getNumObjects()){
+      valueCostRatio[index] = -1.0;
+   }
+}
+
+// checks if all values in valueCostRatio are negative
+// if so, all items are off so return true
+bool knapsack::allItemsOff(void) {
+   for (int i = 0; i < getNumObjects(); i++) {
+      if (valueCostRatio[i] >= 0) {
+         return false;
+      }
+   }
+   return true;
 }

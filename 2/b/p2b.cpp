@@ -81,40 +81,6 @@ void setNodeWeights(Graph &g, int w)
     }
 }
 
-// function to generate another possible combination of colors in the graph
-void incrementColors(Graph &g, int maxColor) {
-    pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
-    for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
-        
-        // for each node in the graph, increment the color value
-        g[*vItr].color++;
-
-        // if the color is larger than max color, reset this node's color and increment
-        // the next node's color
-        if (g[*vItr].color > maxColor) {
-            g[*vItr].color = 0;
-        } else {
-            // if the node's color didn't need to be reset, then we don't need to carry
-            // over the increment and can stop the iteration here
-            break;
-        }
-    }
-}
-
-// checks if we've tried every possible coloring for the graph
-bool checkIfDone(Graph &g, int maxColor) {
-    pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
-    for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
-        
-        // because we generate combinations by incrementing, we know that we are done
-        // when every node's color is the maxColor value
-        if (g[*vItr].color != maxColor) {
-            return false;
-        }
-    }
-    return true;
-}
-
 int numConflicts(Graph &g) {
     pair<Graph::edge_iterator, Graph::edge_iterator> eItrRange = edges(g);
     Graph::vertex_descriptor v1, v2;
@@ -154,45 +120,7 @@ void printSolution(Graph &g, int numConflicts)
 }
 
 int exhaustiveColoring(Graph &g, int numColors, int t) {
-    int leastConflicts = INT_MAX;
-    int currNumConflicts = INT_MAX;
-    int bestColors[num_vertices(g)] = {0};
-    clock_t start_time;
-    start_time = clock();
-    double total_time = 0;
 
-    // we break out of while loop if leastConflicts == 0 since we know
-    // we can't do better than 0 conflicts
-    while (!checkIfDone(g, numColors - 1) and leastConflicts > 0) {
-        
-        // we search over the entire space by using incrementColors
-        incrementColors(g, numColors - 1);
-        currNumConflicts = numConflicts(g);
-        if (currNumConflicts < leastConflicts) {
-            // if the current coloring has less conflicts than our previous best
-            // then we set leastConflicts and store the colors of each node in bestColors
-            leastConflicts = currNumConflicts;
-            
-            int i = 0;
-            pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
-            for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
-                bestColors[i++] = g[*vItr].color;
-            }
-        }
-
-        // checking if we go over time limit
-        total_time = (clock() - start_time) / (double) CLOCKS_PER_SEC;
-        if (total_time >= t) {
-            break;
-        }
-    }
-
-    // print out best solution
-    //printColors(g);
-    for (int i = 0; i < num_vertices(g); i++) {
-        g[i].color = bestColors[i];
-    }
-    printSolution(g, leastConflicts);
     return leastConflicts;
 }
 

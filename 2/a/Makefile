@@ -11,4 +11,4 @@ all:
 	$(CC) $(CFLAGS) $(LFLAGS) -o $(TARGET).out $(SRCS)
 
 clean:
-	rm $(TARGET)
+	rm $(TARGET).out
