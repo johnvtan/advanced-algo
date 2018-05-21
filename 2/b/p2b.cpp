@@ -28,7 +28,7 @@ int const NONE = -1;  // Used to represent a node that does not exist
 struct VertexProperties;
 struct EdgeProperties;
 
-typedef adjacency_list<vecS, vecS, bidirectionalS, VertexProperties, EdgeProperties> Graph;
+typedef adjacency_list<vecS, vecS, undirectedS, VertexProperties, EdgeProperties> Graph;
 
 struct VertexProperties
 {
@@ -120,15 +120,31 @@ void printSolution(Graph &g, int numConflicts)
 }
 
 int findMaxmimumDegreeNode(Graph &g) {
+    int maxDegreeIndex = -1;
+    int maxDegreeCount = -1;
+
     pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
     for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
-        cout << "Node (" << *vItr << "): " << g[*vItr].color << endl;
-        adjacent_vertices();
+        int currDegreeCount = 0;
+        pair<Graph::adjacency_iterator, Graph::adjacency_iterator> adjItrRange = adjacent_vertices(*vItr, g);
+
+        for (Graph::adjacency_iterator adjItr = adjItrRange.first; adjItr != adjItrRange.second; adjItr++) {
+            currDegreeCount++;
+        }
+
+        if (currDegreeCount > maxDegreeCount) {
+            maxDegreeIndex = *vItr;
+            maxDegreeCount = currDegreeCount;
+        }
     }
+
+    return maxDegreeIndex;
 }
 
 int exhaustiveColoring(Graph &g, int numColors, int t) {
-    findMaxmimumDegreeNode(g);
+    int leastConflicts = INT_MAX;
+    int maxDegreeIndex = findMaxmimumDegreeNode(g);
+    cout << "Max degree index: " << maxDegreeIndex << endl;
 
     return leastConflicts;
 }
