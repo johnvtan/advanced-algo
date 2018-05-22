@@ -133,6 +133,14 @@ int countUncoloredNodes(Graph &g) {
     return count;
 }
 
+void colorUncoloredNodes(Graph &g) {
+	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+
+    for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
+        g[*vItr].color = 0;
+    }
+}
+
 bool allTrue(vector<bool> v) {
 	for (unsigned int i = 0; i < v.size(); i++) {
 		if (!v[i]) {
@@ -218,6 +226,9 @@ int greedyColoring(Graph &g, int numColors, int t) {
 	// for now, we don't color a node if it creates a conflict. the amount of uncolored nodes = numConflicts;
 	leastConflicts = countUncoloredNodes(g);
 	cout << "Number of conflicts: " << leastConflicts << endl;
+
+	// we don't want to leave conflicted nodes uncolored, so we color them an arbitrary color
+	colorUncoloredNodes(g);
 
     return leastConflicts;
 }
