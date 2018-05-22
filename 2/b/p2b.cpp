@@ -24,6 +24,7 @@ class nullPtrError : public baseException
 };
 
 int const NONE = -1;  // Used to represent a node that does not exist
+int const NO_COLOR = -1;
 
 struct VertexProperties;
 struct EdgeProperties;
@@ -39,7 +40,7 @@ struct VertexProperties
     int weight;
     int color;
 
-    VertexProperties() : color(-1) {}
+    VertexProperties() : color(NO_COLOR) {}
 };
 
 // Create a struct to hold properties for each edge
@@ -112,14 +113,24 @@ void printSolution(Graph &g, int numConflicts)
 {
     cout << "Total Conflicts: " << numConflicts << endl;
 
-    for (int counter = 0; counter < num_vertices(g); counter++)
+    for (unsigned int counter = 0; counter < num_vertices(g); counter++)
     {
         cout << counter << ": " << g[counter].color << endl;
 
     }
 }
 
-int findMaxmimumDegreeNode(Graph &g) {
+bool allTrue(vector<bool> v) {
+	for (unsigned int i = 0; i < v.size(); i++) {
+		if (!v[i]) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+int findMaximumDegreeNode(Graph &g, int numColors) {
     int maxDegreeIndex = -1;
     int maxDegreeCount = -1;
 
@@ -128,8 +139,22 @@ int findMaxmimumDegreeNode(Graph &g) {
         int currDegreeCount = 0;
         pair<Graph::adjacency_iterator, Graph::adjacency_iterator> adjItrRange = adjacent_vertices(*vItr, g);
 
+        // this array keeps track of what neighboring colors have been occupied so far
+        vector<bool> adjColors(numColors, false);
+
+
         for (Graph::adjacency_iterator adjItr = adjItrRange.first; adjItr != adjItrRange.second; adjItr++) {
             currDegreeCount++;
+
+            // this keeps track that a neighbor has colored a specific color already
+            if (g[*adjItr].color != NO_COLOR) {
+            	adjColors[g[*adjItr].color] = true;
+            }
+        }
+
+        // If the node has already been colored, or if the node cannot be colored
+        if (g[*vItr].color != NO_COLOR || allTrue(adjColors)) {
+        	cout << "Node " << *vItr << " cannot be colored" << endl;
         }
 
         if (currDegreeCount > maxDegreeCount) {
@@ -143,7 +168,9 @@ int findMaxmimumDegreeNode(Graph &g) {
 
 int exhaustiveColoring(Graph &g, int numColors, int t) {
     int leastConflicts = INT_MAX;
-    int maxDegreeIndex = findMaxmimumDegreeNode(g);
+
+    
+    int maxDegreeIndex = findMaximumDegreeNode(g, numColors);
     cout << "Max degree index: " << maxDegreeIndex << endl;
 
     return leastConflicts;
