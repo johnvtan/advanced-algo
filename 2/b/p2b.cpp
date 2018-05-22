@@ -120,6 +120,19 @@ void printSolution(Graph &g, int numConflicts)
     }
 }
 
+int countUncoloredNodes(Graph &g) {
+	int count = 0;
+
+	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
+    for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
+        if (g[*vItr].color == NO_COLOR) {
+        	count++;
+        }
+    }
+
+    return count;
+}
+
 bool allTrue(vector<bool> v) {
 	for (unsigned int i = 0; i < v.size(); i++) {
 		if (!v[i]) {
@@ -152,9 +165,9 @@ int findMaximumDegreeNode(Graph &g, int numColors) {
             }
         }
 
-        // If the node has already been colored, or if the node cannot be colored
+        // If the node has already been colored, or if the node cannot be colored because of its neighbors' colors, we pass
         if (g[*vItr].color != NO_COLOR || allTrue(adjColors)) {
-        	cout << "Node " << *vItr << " cannot be colored" << endl;
+        	continue;
         }
 
         if (currDegreeCount > maxDegreeCount) {
@@ -166,12 +179,45 @@ int findMaximumDegreeNode(Graph &g, int numColors) {
     return maxDegreeIndex;
 }
 
-int exhaustiveColoring(Graph &g, int numColors, int t) {
+int findNodeColor(Graph &g, int nodeIndex, int numColors) {
+	// this array keeps track of what neighboring colors have been occupied so far
+    vector<bool> adjColors(numColors, false);
+
+    pair<Graph::adjacency_iterator, Graph::adjacency_iterator> adjItrRange = adjacent_vertices(nodeIndex, g);
+
+    for (Graph::adjacency_iterator adjItr = adjItrRange.first; adjItr != adjItrRange.second; adjItr++) {
+        // this keeps track that a neighbor has colored a specific color already
+        if (g[*adjItr].color != NO_COLOR) {
+        	adjColors[g[*adjItr].color] = true;
+        }
+    }
+
+    vector<int> availableColors;
+
+    for (int i = 0; i < adjColors.size(); i++) {
+    	// keep track of the colors that haven't been used
+    	if (!adjColors[i]) {
+    		availableColors.push_back(i);
+    	}
+    }
+
+    // i guess for now we can just return whatever color is first available
+    return availableColors[0];
+}
+
+// takes the uncolored nodes with the highest degree and color them until no more nodes can be colored
+int greedyColoring(Graph &g, int numColors, int t) {
     int leastConflicts = INT_MAX;
 
-    
-    int maxDegreeIndex = findMaximumDegreeNode(g, numColors);
-    cout << "Max degree index: " << maxDegreeIndex << endl;
+    while(findMaximumDegreeNode(g, numColors) != -1) {
+	    int maxDegreeNodeIndex = findMaximumDegreeNode(g, numColors);
+	    int maxDegreeNodeColor = findNodeColor(g, maxDegreeNodeIndex, numColors);
+	    g[maxDegreeNodeIndex].color = maxDegreeNodeColor;
+	}
+
+	// for now, we don't color a node if it creates a conflict. the amount of uncolored nodes = numConflicts;
+	leastConflicts = countUncoloredNodes(g);
+	cout << "Number of conflicts: " << leastConflicts << endl;
 
     return leastConflicts;
 }
@@ -209,7 +255,7 @@ int main(int argc, char **argv)
         fin >> numColors;
         initializeGraph(g,fin);
         
-        numConflicts = exhaustiveColoring(g, numColors, 600);
+        numConflicts = greedyColoring(g, numColors, 600);
     }
     catch (indexRangeError &ex)
     {
