@@ -23,10 +23,10 @@ void greedyKnapsack(knapsack &k) {
 		nextIndex = k.getMaxRatioIndex();
 		if (k.getCost() + k.getCost(nextIndex) > k.getCostLimit()) {
 			k.setRatioOff(nextIndex);
-			cout << "Can't put " << nextIndex << " in knapsack" << endl;
+			//cout << "Can't put " << nextIndex << " in knapsack" << endl;
 		} else {
 			k.select(nextIndex);
-			cout << "Selected: " << nextIndex << endl;
+			//cout << "Selected: " << nextIndex << endl;
 		}
 	}
 	k.printSolution();

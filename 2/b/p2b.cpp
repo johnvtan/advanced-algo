@@ -135,9 +135,10 @@ int countUncoloredNodes(Graph &g) {
 
 void colorUncoloredNodes(Graph &g) {
 	pair<Graph::vertex_iterator, Graph::vertex_iterator> vItrRange = vertices(g);
-
     for (Graph::vertex_iterator vItr= vItrRange.first; vItr != vItrRange.second; ++vItr) {
-        g[*vItr].color = 0;
+        if (g[*vItr].color == NO_COLOR) {
+            g[*vItr].color = 0;
+        } 
     }
 }
 
@@ -162,7 +163,6 @@ int findMaximumDegreeNode(Graph &g, int numColors) {
 
         // this array keeps track of what neighboring colors have been occupied so far
         vector<bool> adjColors(numColors, false);
-
 
         for (Graph::adjacency_iterator adjItr = adjItrRange.first; adjItr != adjItrRange.second; adjItr++) {
             currDegreeCount++;
@@ -199,22 +199,23 @@ int findNodeColor(Graph &g, int nodeIndex, int numColors) {
         	adjColors[g[*adjItr].color] = true;
         }
     }
-
-    vector<int> availableColors;
-
-    for (int i = 0; i < adjColors.size(); i++) {
+    
+    for (unsigned int i = 0; i < adjColors.size(); i++) {
     	// keep track of the colors that haven't been used
     	if (!adjColors[i]) {
-    		availableColors.push_back(i);
+    		//availableColors.push_back(i);
+            // return first available color
+            return i;
     	}
     }
 
-    // i guess for now we can just return whatever color is first available
-    return availableColors[0];
+    // if there were no adjacent colors, return NO_COLOR to indicate that no valid color for this node
+    return NO_COLOR;
 }
 
 // takes the uncolored nodes with the highest degree and color them until no more nodes can be colored
 int greedyColoring(Graph &g, int numColors, int t) {
+    (void) t;
     int leastConflicts = INT_MAX;
 
     while(findMaximumDegreeNode(g, numColors) != -1) {
@@ -225,17 +226,17 @@ int greedyColoring(Graph &g, int numColors, int t) {
 
 	// for now, we don't color a node if it creates a conflict. the amount of uncolored nodes = numConflicts;
 	leastConflicts = countUncoloredNodes(g);
-	cout << "Number of conflicts: " << leastConflicts << endl;
+	//cout << "Number of conflicts: " << leastConflicts << endl;
 
 	// we don't want to leave conflicted nodes uncolored, so we color them an arbitrary color
 	colorUncoloredNodes(g);
-
+    printSolution(g, leastConflicts);
     return leastConflicts;
 }
 
 int main(int argc, char **argv)
 {
-    char x;
+    //char x;
     ifstream fin;
     string fileName;
     
@@ -243,7 +244,7 @@ int main(int argc, char **argv)
     // hard code it here for testing.
     if (2 != argc) {
       cout << "Error: need to include path to input as argument.\n"
-           << "\tp1b.out <input-file>\n";
+           << "\tp2b.out <input-file>\n";
       exit(1);
     }
     
@@ -262,11 +263,11 @@ int main(int argc, char **argv)
         //cout << "Reading graph" << endl;
         Graph g;
         int numColors;
-        int numConflicts = -1;
+        //int numConflicts = -1;
         fin >> numColors;
         initializeGraph(g,fin);
         
-        numConflicts = greedyColoring(g, numColors, 600);
+        greedyColoring(g, numColors, 600);
     }
     catch (indexRangeError &ex)
     {
