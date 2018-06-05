@@ -1,9 +1,8 @@
 option solver cplex;
 option cplex_options 'time=600';
-model knapsack.mod;
-data ../../knapsack-ampl/knapsack8.dat
+model color.mod;
+data ../../color-ampl/color12-3.dat;
 solve;
-display x;
+display colors;
 display objective;
-display costBound;
-display sum {i in 0..n-1} x[i] * cost[i];
+display sum {i in 0..numNodes-1, j in 0..numNodes-1} edge[i,j];
