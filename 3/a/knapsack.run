@@ -1,6 +1,9 @@
 option solver cplex;
 option cplex_options 'time=600';
 model knapsack.mod;
-data ../../knapsack-ampl/knapsack128.dat
-solve;display objective;
+data ../../knapsack-ampl/knapsack64.dat;
+solve;
+display x;
+display objective;
+display costBound;
 display sum {i in 0..n-1} x[i] * cost[i];

@@ -16,8 +16,10 @@ if __name__ == '__main__':
                  'option cplex_options \'time=600\';', 
                  'model knapsack.mod;',
                  '',
-                 'solve;'
+                 'solve;',
+                 'display x;',
                  'display objective;',
+                 'display costBound;',
                  'display sum {i in 0..n-1} x[i] * cost[i];']
 
     run_file_name = 'knapsack.run'
