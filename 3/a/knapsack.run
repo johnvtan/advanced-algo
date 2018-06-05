@@ -1,7 +1,7 @@
 option solver cplex;
 option cplex_options 'time=600';
 model knapsack.mod;
-data ../../knapsack-ampl/knapsack64.dat;
+data ../../knapsack-ampl/knapsack8.dat
 solve;
 display x;
 display objective;
