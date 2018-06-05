@@ -1,6 +1,5 @@
 *.o
-*.out
 */*/output/
-!3/a/output/*
+!3/*/output/
 */submission/
 *.tar.gz
