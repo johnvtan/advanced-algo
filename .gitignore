@@ -1,4 +1,5 @@
 *.o
+*.out
 */*/output/
 !3/*/output/
 */submission/
