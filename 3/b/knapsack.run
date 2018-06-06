@@ -1,7 +1,7 @@
 option solver cplex;
 option cplex_options 'time=600';
 model color.mod;
-data ../../color-ampl/color192-6.dat
+data ../../color-ampl/color96-7.dat
 solve;
 display colors;
 display objective;
