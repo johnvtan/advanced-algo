@@ -1,8 +1,7 @@
 option solver cplex;
 option cplex_options 'time=600';
 model color.mod;
-data ../../color-ampl/color12-3.dat;
+data ../../color-ampl/color24-4.dat;
 solve;
 display colors;
 display objective;
-display sum {i in 0..numNodes-1, j in 0..numNodes-1} edge[i,j];
