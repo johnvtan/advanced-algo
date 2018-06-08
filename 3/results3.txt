@@ -1,7 +1,11 @@
 Team Members: John Tan, Emerson Boyd
 
 KNAPSACK
+The ILP formulation for the knapsack problem is relatively straightforward from the knapsack problem statement. Given the cost bound, value vector, and cost vector for all the items, we want to maximize the value of the chosen items without exceeding the cost bound. So we create a binary vector x where x[i] is 1 if item i is selected for the knapsack. This allows us to create our objective, which is the sum over x[i] * value[i], which is the total value of the items in our knapsack that we want to maximize. We set a single constraint which ensures that the cost of the items in our bag is less than or equal to the cost bound.
 
+Although ILP is an NP-Complete problem, the solver we used solved all of the instances of knapsack extremely quickly. None of the instances approached the 10 minute limit set on the solver - every instance was solved in well under one second. This demonstrates that even though the solver has an exponential worst-case run time, it can still solve some large problem instances extremely quickly. This may be due in part to the simplicity of the knapsack formulation, since it only had one variable and one constraint.
+
+While at smaller instances the ILP solution and exhaustive solution converged to the same total value, the ILP solution began to yield a greater value by instance size 48. Furthermore, the ILP solution seemed to have outperformed the greedy solution across the board by yielding a higher value at both small and large instances. In addition, the ILP solution ran very quickly across all instance sizes, which was similar to the greedy algorithm while improving on its performance. 
 
 COLORING
 Our ILP coloring solution maintains three matrices to keep track of: edges between nodes (size n by n), colors of nodes (size n by c), and conflicts between nodes (size n by n). Our constraint on the conflicts is designed to cause the conflict cell to be a value of 1 if there is a conflict, and unconstrained if there is no conflict. Because our algorithm tries to minimize the value of the conflicts, if the conflicts remain unconstrained, they will get evaluated to zero.
