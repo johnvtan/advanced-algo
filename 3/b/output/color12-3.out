@@ -1,19 +1,18 @@
 CPLEX 12.8.0.0: time=600
 CPLEX 12.8.0.0: optimal integer solution; objective 1
-21 MIP simplex iterations
+20 MIP simplex iterations
 0 branch-and-bound nodes
-No basis.
 colors [*,*]
 :    0   1   2    :=
 0    0   1   0
 1    0   0   1
-2    1   0   0
+2    0   1   0
 3    0   0   1
-4    0   0   1
+4    0   1   0
 5    1   0   0
-6    0   1   0
+6    1   0   0
 7    1   0   0
-8    0   1   0
+8    0   0   1
 9    0   1   0
 10   1   0   0
 11   0   0   1
