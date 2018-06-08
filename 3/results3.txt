@@ -1,0 +1,13 @@
+Team Members: John Tan, Emerson Boyd
+
+KNAPSACK
+
+
+COLORING
+Our ILP coloring solution maintains three matrices to keep track of: edges between nodes (size n by n), colors of nodes (size n by c), and conflicts between nodes (size n by n). Our constraint on the conflicts is designed to cause the conflict cell to be a value of 1 if there is a conflict, and unconstrained if there is no conflict. Because our algorithm tries to minimize the value of the conflicts, if the conflicts remain unconstrained, they will get evaluated to zero.
+
+Because we maintain a binary matrix of coloring assignments, rather than an integer vector to denote each node's color, we add an extra dimension that the solver must take into account. Because the solver has to process three 2D structures instead of two 2D structures and one 1D structure, we do add some inefficiency to the solver. This could be potentially fixed by changing the coloring assignments to use a vector rather than a matrix, and might cause the input files of larger sizes to run in under 10 minutes.
+
+Ultimately, it is difficult to measure the exact performance of this ILP solution, as we do not know how the CPLEX algorithm optimizes its solution process, but there is always room for improvement by reducing the dimensionality of our variables.
+
+In terms of performance against other methods (exhaustive and greedy algorithms), it performs well in several scenarios. It runs equally as fast as the greedy algorithm for inputs of small size. For inputs of large size that has at least one conflict, it performs  better than the greedy algorithm when limited to ten minutes. For example, the 192-6 input file got 8 conflicts with the greedy algorithm, while the same input file had 4 conflicts with the ILP solution after the 10-minute timeout.
