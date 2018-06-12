@@ -17,19 +17,9 @@ using namespace std;
 #include "d_matrix.h"
 #include "knapsack.h"
 
-void greedyKnapsack(knapsack &k) {
-	int nextIndex = -1;
-	while (!k.allItemsOff()) {
-		nextIndex = k.getMaxRatioIndex();
-		if (k.getCost() + k.getCost(nextIndex) > k.getCostLimit()) {
-			k.setRatioOff(nextIndex);
-			//cout << "Can't put " << nextIndex << " in knapsack" << endl;
-		} else {
-			k.select(nextIndex);
-			//cout << "Selected: " << nextIndex << endl;
-		}
-	}
-	k.printSolution();
+void branchAndBound(knapsack &k) {
+   k.select(2);
+   cout << "Bound with nothing selected: " << k.bound() << endl;
 }
 
 int main(int argc, char **argv)
@@ -61,7 +51,7 @@ int main(int argc, char **argv)
 
       //cout << endl << "Best solution" << endl;
       //k.printSolution();
-      greedyKnapsack(k);
+      branchAndBound(k);
    }    
 
    catch (indexRangeError &ex) 

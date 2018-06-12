@@ -15,11 +15,13 @@ class knapsack
       void select(int);
       void unSelect(int);
       bool isSelected(int) const;
-      void selectList(vector <int> list);
+      void selectList(vector<int> list);
       void unSelectAll(void);
       int getMaxRatioIndex(void);
+      int getMaxRatioUnselectedIndex(void);
       void setRatioOff(int index);
       bool allItemsOff(void);
+      float bound(void);
 
    private:
       int numObjects;
@@ -240,6 +242,16 @@ int knapsack::getMaxRatioIndex(void) {
    return max;
 }
 
+int knapsack::getMaxRatioUnselectedIndex(void) {
+   int max = -1;
+   for (int i = 0; i < getNumObjects(); i++) {
+      if (valueCostRatio[i] > valueCostRatio[max] && isSelected(i) == false) {
+         max = i;
+      }
+   }
+   return max;
+}
+
 // sets index to -1.0 in valueCostRatio
 void knapsack::setRatioOff(int index) {
    if (index < getNumObjects()){
@@ -256,4 +268,30 @@ bool knapsack::allItemsOff(void) {
       }
    }
    return true;
+}
+
+// returns upper bound on value
+float knapsack::bound(void) {
+   // if all the items available are selected, then the upper bound is the value of whatever is already in the knapsack
+   if (-1 == getMaxRatioUnselectedIndex()) {
+      return getValue();
+   }
+   vector<bool> previouslySelected = selected;
+   float upper_bound = 0;
+   int index = 0;
+   while ((index = getMaxRatioUnselectedIndex()) >= 0) {
+      if (getCost() + getCost(index) > getCostLimit()) {
+         break;
+      } else {
+         select(index);
+      }
+   }
+
+   upper_bound = (1.0 * getValue()) + 1.0 * ((getCostLimit() - getCost()) * valueCostRatio[getMaxRatioUnselectedIndex()]);
+   
+   // reselect original items
+   for (int i = 0; i < previouslySelected.size(); i++) {
+      selected[i] = previouslySelected[i];
+   }
+   return upper_bound;
 }
