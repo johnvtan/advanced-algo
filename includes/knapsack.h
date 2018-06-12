@@ -22,6 +22,7 @@ class knapsack
       void setRatioOff(int index);
       bool allItemsOff(void);
       float bound(void);
+      void setLayer(int i);
 
    private:
       int numObjects;
@@ -32,6 +33,7 @@ class knapsack
       vector<bool> selected;
       int totalValue;
       int totalCost;
+      int layer;
 };
 
 knapsack::knapsack(ifstream &fin)
@@ -272,10 +274,6 @@ bool knapsack::allItemsOff(void) {
 
 // returns upper bound on value
 float knapsack::bound(void) {
-   // if all the items available are selected, then the upper bound is the value of whatever is already in the knapsack
-   if (-1 == getMaxRatioUnselectedIndex()) {
-      return getValue();
-   }
    vector<bool> previouslySelected = selected;
    float upper_bound = 0;
    int index = 0;
@@ -287,11 +285,19 @@ float knapsack::bound(void) {
       }
    }
 
-   upper_bound = (1.0 * getValue()) + 1.0 * ((getCostLimit() - getCost()) * valueCostRatio[getMaxRatioUnselectedIndex()]);
+   upper_bound = 1.0 * getValue();
+   // if all the items available are selected, then the upper bound is the value of whatever is already in the knapsack
+   if (getMaxRatioUnselectedIndex() >= 0) {
+      upper_bound += 1.0 * ((getCostLimit() - getCost()) * valueCostRatio[getMaxRatioUnselectedIndex()]);
+   }
    
    // reselect original items
    for (int i = 0; i < previouslySelected.size(); i++) {
       selected[i] = previouslySelected[i];
    }
    return upper_bound;
+}
+
+void setLayer(int i) {
+   layer = i;
 }

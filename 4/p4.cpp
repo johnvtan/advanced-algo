@@ -18,8 +18,28 @@ using namespace std;
 #include "knapsack.h"
 
 void branchAndBound(knapsack &k) {
-   k.select(2);
-   cout << "Bound with nothing selected: " << k.bound() << endl;
+   vector<int> best_solution;
+   vector<BranchAndBoundNode> partial_solutions;
+   
+   vector<int> temp;
+   partial_solutions.push_back(BranchAndBoundNode(temp, 0));
+   temp.push_back(0);
+   partial_solutions.push_back(BranchAndBoundNode(temp, 0));
+   
+   int highest_bound = 0;
+   int highest_index = -1;
+   int size = 0;
+   while ((size = partial_solutions.size())) {
+      // calculate upper bound on each solution in partial_solutions
+      for (int i = 0; i < size; i++) {
+         k.selectList(partial_solutions[i].getSelectedItems());
+         if (k.bound() > highest_bound) {
+            highest_index = i;
+            highest_bound = k.bound();
+         }
+      }
+      
+   }
 }
 
 int main(int argc, char **argv)
