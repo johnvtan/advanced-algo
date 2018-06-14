@@ -97,6 +97,7 @@ void branchAndBound(knapsack &k, int t) {
 
    k.unSelectAll();
    k.selectList(best_solution.getSelectedItems());
+   cout << "Total time: " << total_time << endl;
 }
 
 int main(int argc, char **argv)
