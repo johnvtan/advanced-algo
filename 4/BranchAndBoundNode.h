@@ -27,8 +27,8 @@ BranchAndBoundNode::BranchAndBoundNode(vector<int> items, int current_layer, kna
     upper_bound = k.bound();
     selected_items_value = k.getValue();
 
-    cout << "New BnB node: Value = " << selected_items_value << " upper_bound = " << upper_bound << endl;
-    printItems();
+    //cout << "New BnB node: Value = " << selected_items_value << " upper_bound = " << upper_bound << endl;
+    //printItems();
 }
 
 BranchAndBoundNode::BranchAndBoundNode(const BranchAndBoundNode &other) {

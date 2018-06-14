@@ -19,11 +19,12 @@ using namespace std;
 #include "BranchAndBoundNode.h"
 
 void branchAndBound(knapsack &k) {
+   cout << "Running...\n";
    vector<BranchAndBoundNode> partial_solutions;
    
    // set up the node list with choosing to not select, then select the first item in the knapsack
    vector<int> temp;
-   cout << "test" << endl;
+   //cout << "test" << endl;
    partial_solutions.push_back(BranchAndBoundNode(temp, 0, k));
    temp.push_back(0);
    partial_solutions.push_back(BranchAndBoundNode(temp, 0, k));
@@ -53,12 +54,12 @@ void branchAndBound(knapsack &k) {
       if (highest_upper_bound_solution.getLayer() == k.getNumObjects() - 1) {
          if (highest_upper_bound_solution.getSelectedItemsValue() > best_solution.getSelectedItemsValue()) {
             best_solution = highest_upper_bound_solution;
-            cout << "New Best Solution found : " << highest_upper_bound_index << " Value = " << best_solution.getSelectedItemsValue() << endl;
-            best_solution.printItems();
+            //cout << "New Best Solution found : " << highest_upper_bound_index << " Value = " << best_solution.getSelectedItemsValue() << endl;
+            //best_solution.printItems();
          } else {
-            cout << "Index " << highest_upper_bound_index << " erased because value <= best value" << endl;
-            cout << "Erased value: " << partial_solutions[highest_upper_bound_index].getSelectedItemsValue() << " Best value : " << best_solution.getSelectedItemsValue() << endl;
-            partial_solutions[highest_upper_bound_index].printItems();
+            //cout << "Index " << highest_upper_bound_index << " erased because value <= best value" << endl;
+            //cout << "Erased value: " << partial_solutions[highest_upper_bound_index].getSelectedItemsValue() << " Best value : " << best_solution.getSelectedItemsValue() << endl;
+            //partial_solutions[highest_upper_bound_index].printItems();
             partial_solutions.erase(partial_solutions.begin() + highest_upper_bound_index);
          }
       }

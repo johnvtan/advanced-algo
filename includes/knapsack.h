@@ -191,8 +191,8 @@ void knapsack::select(int i)
       selected[i] = true;
       totalCost = totalCost + getCost(i);
       totalValue = totalValue + getValue(i);
-      cout << "New selected item : " << i << " total value = " << totalValue << " total cost = " << totalCost << endl;
-      setRatioOff(i);
+      //cout << "New selected item : " << i << " total value = " << totalValue << " total cost = " << totalCost << endl;
+      //setRatioOff(i);
    }
 }
 
@@ -245,13 +245,15 @@ int knapsack::getMaxRatioIndex(void) {
 }
 
 int knapsack::getMaxRatioUnselectedIndex(void) {
-   int max = -1;
+   int max_index = -1;
+   float max_ratio = 0.0;
    for (int i = 0; i < getNumObjects(); i++) {
-      if (valueCostRatio[i] > valueCostRatio[max] && isSelected(i) == false) {
-         max = i;
+      if (valueCostRatio[i] > max_ratio && isSelected(i) == false) {
+         max_index = i;
+         max_ratio = valueCostRatio[i];
       }
    }
-   return max;
+   return max_index;
 }
 
 // sets index to -1.0 in valueCostRatio
@@ -294,7 +296,9 @@ float knapsack::bound(void) {
    // reselect original items
    unSelectAll();
    for (int i = 0; i < previouslySelected.size(); i++) {
-      selected[i] = previouslySelected[i];
+      if (previouslySelected[i]) {
+         select(i);
+      }
    }
    return upper_bound;
 }
