@@ -22,7 +22,6 @@ class knapsack
       void setRatioOff(int index);
       bool allItemsOff(void);
       float bound(void);
-      void setLayer(int i);
 
    private:
       int numObjects;
@@ -192,6 +191,7 @@ void knapsack::select(int i)
       selected[i] = true;
       totalCost = totalCost + getCost(i);
       totalValue = totalValue + getValue(i);
+      cout << "New selected item : " << i << " total value = " << totalValue << " total cost = " << totalCost << endl;
       setRatioOff(i);
    }
 }
@@ -278,7 +278,7 @@ float knapsack::bound(void) {
    float upper_bound = 0;
    int index = 0;
    while ((index = getMaxRatioUnselectedIndex()) >= 0) {
-      if (getCost() + getCost(index) > getCostLimit()) {
+      if ((getCost() + getCost(index)) > getCostLimit()) {
          break;
       } else {
          select(index);
@@ -292,12 +292,9 @@ float knapsack::bound(void) {
    }
    
    // reselect original items
+   unSelectAll();
    for (int i = 0; i < previouslySelected.size(); i++) {
       selected[i] = previouslySelected[i];
    }
    return upper_bound;
-}
-
-void setLayer(int i) {
-   layer = i;
 }
