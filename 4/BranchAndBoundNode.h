@@ -21,8 +21,8 @@ BranchAndBoundNode::BranchAndBoundNode(vector<int> items, int current_layer, kna
 
     k.unSelectAll();
     k.selectList(selected_items);
-    upper_bound = k.bound();
     selected_items_value = k.getValue();
+    upper_bound = k.bound();
 }
 
 BranchAndBoundNode::BranchAndBoundNode(const BranchAndBoundNode &other) {

@@ -46,7 +46,17 @@ void branchAndBound(knapsack &k, int t) {
 
       // check the upper bound on each solution in partial_solutions and see which is the highest so far
       for (int i = 0; i < size; i++) {
-         if (partial_solutions[i].getUpperBound() > highest_upper_bound_value) {
+
+         // remove a partial soltuion if its upper bound is less than our best solution so far
+         if (partial_solutions[i].getUpperBound() <= best_solution.getSelectedItemsValue()) {
+            partial_solutions.erase(partial_solutions.begin() + i);
+            i--;
+            size--;
+            highest_upper_bound_index--;
+         }
+
+         // update the highest upper bound so far if applicable
+         else if (partial_solutions[i].getUpperBound() > highest_upper_bound_value) {
             highest_upper_bound_index = i;
             highest_upper_bound_value = partial_solutions[i].getUpperBound();
          }
@@ -77,16 +87,6 @@ void branchAndBound(knapsack &k, int t) {
          if (k.getCost() <= k.getCostLimit()) {
             partial_solutions.push_back(BranchAndBoundNode(temp, curr_layer, k));
          }       
-      }
-
-      // remove partial solutions whose upper bounds are less than or equal to our current best solution's value
-      size = partial_solutions.size();
-      for (int i = 0; i < size; i++) {
-         if (partial_solutions[i].getUpperBound() <= best_solution.getSelectedItemsValue()) {
-            partial_solutions.erase(partial_solutions.begin() + i);
-            i--;
-            size--;
-         }
       }
 
       total_time = (clock() - start_time) / (double) CLOCKS_PER_SEC;

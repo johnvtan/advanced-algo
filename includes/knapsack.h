@@ -275,7 +275,6 @@ bool knapsack::allItemsOff(void) {
 
 // returns upper bound on value
 float knapsack::bound(void) {
-   vector<bool> previouslySelected = selected;
    float upper_bound = 0;
    int index = 0;
    while ((index = getMaxRatioUnselectedIndex()) >= 0) {
@@ -292,12 +291,5 @@ float knapsack::bound(void) {
       upper_bound += 1.0 * ((getCostLimit() - getCost()) * valueCostRatio[getMaxRatioUnselectedIndex()]);
    }
    
-   // reselect original items
-   unSelectAll();
-   for (int i = 0; i < previouslySelected.size(); i++) {
-      if (previouslySelected[i]) {
-         select(i);
-      }
-   }
    return upper_bound;
 }
