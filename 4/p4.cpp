@@ -18,13 +18,17 @@ using namespace std;
 #include "knapsack.h"
 #include "BranchAndBoundNode.h"
 
-void branchAndBound(knapsack &k) {
+void branchAndBound(knapsack &k, int t) {
    cout << "Running...\n";
+
+   clock_t start_time;
+   start_time = clock();
+   double total_time = 0;
+
    vector<BranchAndBoundNode> partial_solutions;
    
    // set up the node list with choosing to not select, then select the first item in the knapsack
    vector<int> temp;
-   //cout << "test" << endl;
    partial_solutions.push_back(BranchAndBoundNode(temp, 0, k));
    temp.push_back(0);
    partial_solutions.push_back(BranchAndBoundNode(temp, 0, k));
@@ -54,12 +58,7 @@ void branchAndBound(knapsack &k) {
       if (highest_upper_bound_solution.getLayer() == k.getNumObjects() - 1) {
          if (highest_upper_bound_solution.getSelectedItemsValue() > best_solution.getSelectedItemsValue()) {
             best_solution = highest_upper_bound_solution;
-            //cout << "New Best Solution found : " << highest_upper_bound_index << " Value = " << best_solution.getSelectedItemsValue() << endl;
-            //best_solution.printItems();
          } else {
-            //cout << "Index " << highest_upper_bound_index << " erased because value <= best value" << endl;
-            //cout << "Erased value: " << partial_solutions[highest_upper_bound_index].getSelectedItemsValue() << " Best value : " << best_solution.getSelectedItemsValue() << endl;
-            //partial_solutions[highest_upper_bound_index].printItems();
             partial_solutions.erase(partial_solutions.begin() + highest_upper_bound_index);
          }
       }
@@ -88,6 +87,11 @@ void branchAndBound(knapsack &k) {
             i--;
             size--;
          }
+      }
+
+      total_time = (clock() - start_time) / (double) CLOCKS_PER_SEC;
+      if (total_time >= t) {
+         break;
       }
    }
 
@@ -120,9 +124,7 @@ int main(int argc, char **argv)
       //cout << "Reading knapsack instance" << endl;
       knapsack k(fin);
 
-      //exhaustiveKnapsack(k, 600);
-      //cout << endl << "Best solution" << endl;
-      branchAndBound(k);
+      branchAndBound(k, 600);
 
       k.printSolution();
    }    
