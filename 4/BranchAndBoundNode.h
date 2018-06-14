@@ -3,15 +3,12 @@ public:
     BranchAndBoundNode(vector<int>, int, knapsack &);
     BranchAndBoundNode(const BranchAndBoundNode &);
     BranchAndBoundNode(void);
-    bool getFathomed(void) const;
-    void setFathomed(bool f);
     vector<int> getSelectedItems(void) const;
     int getLayer(void) const;
     float getUpperBound(void) const;
     int getSelectedItemsValue(void) const;
     void printItems(void) const;
 private:
-    bool fathomed;
     vector<int> selected_items;
     int layer;
     float upper_bound;
@@ -26,13 +23,9 @@ BranchAndBoundNode::BranchAndBoundNode(vector<int> items, int current_layer, kna
     k.selectList(selected_items);
     upper_bound = k.bound();
     selected_items_value = k.getValue();
-
-    //cout << "New BnB node: Value = " << selected_items_value << " upper_bound = " << upper_bound << endl;
-    //printItems();
 }
 
 BranchAndBoundNode::BranchAndBoundNode(const BranchAndBoundNode &other) {
-    fathomed = other.getFathomed();
     selected_items = other.getSelectedItems();
     layer = other.getLayer();
     upper_bound = other.getUpperBound();
@@ -41,14 +34,6 @@ BranchAndBoundNode::BranchAndBoundNode(const BranchAndBoundNode &other) {
 
 BranchAndBoundNode::BranchAndBoundNode(void) {
 
-}
-
-bool BranchAndBoundNode::getFathomed(void) const {
-    return fathomed;
-}
-
-void BranchAndBoundNode::setFathomed(bool f) {
-    fathomed = f;
 }
 
 vector<int> BranchAndBoundNode::getSelectedItems(void) const {

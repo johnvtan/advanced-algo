@@ -191,8 +191,7 @@ void knapsack::select(int i)
       selected[i] = true;
       totalCost = totalCost + getCost(i);
       totalValue = totalValue + getValue(i);
-      //cout << "New selected item : " << i << " total value = " << totalValue << " total cost = " << totalCost << endl;
-      //setRatioOff(i);
+      //setRatioOff(i); UNCOMMENT IF RUNNING PROJECT 1
    }
 }
 
