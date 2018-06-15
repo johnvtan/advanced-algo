@@ -19,8 +19,6 @@ using namespace std;
 #include "BranchAndBoundNode.h"
 
 void branchAndBound(knapsack &k, int t) {
-   cout << "Running...\n";
-
    clock_t start_time;
    start_time = clock();
    double total_time = 0;
@@ -71,7 +69,6 @@ void branchAndBound(knapsack &k, int t) {
          if (next_solution.getSelectedItemsValue() > best_solution.getSelectedItemsValue()) {
             best_solution = next_solution;
             new_best_solution = true;
-            //cout << "got new best" << endl;
          }
          partial_solutions.erase(partial_solutions.begin() + next_index);
 

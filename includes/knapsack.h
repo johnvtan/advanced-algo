@@ -192,7 +192,7 @@ void knapsack::select(int i)
       selected[i] = true;
       totalCost = totalCost + getCost(i);
       totalValue = totalValue + getValue(i);
-      setRatioOff(i); //UNCOMMENT IF RUNNING PROJECT 1
+      // setRatioOff(i); //UNCOMMENT IF RUNNING PROJECT 1
    }
 }
 
