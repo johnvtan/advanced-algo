@@ -54,7 +54,7 @@ void exhaustiveKnapsack(knapsack &k, int t) {
    k.unSelectAll();
    k.selectList(best_combination);
    k.printSolution();
-   //cout << "Total Time: " << total_time << "seconds\n";
+   cout << "Total Time: " << total_time << "seconds\n";
 }
 
 int main(int argc, char **argv)

@@ -39,7 +39,8 @@ void branchAndBound(knapsack &k, int t) {
    int highest_upper_bound_value = 0;
    int highest_upper_bound_index = -1;
    int size = 0;
-   BranchAndBoundNode highest_upper_bound_solution;
+   bool new_best_solution = false;
+   BranchAndBoundNode highest_upper_bound_solution, new_solution;
    while ((size = partial_solutions.size())) {
       highest_upper_bound_index = -1;
       highest_upper_bound_value = 0;
@@ -58,6 +59,7 @@ void branchAndBound(knapsack &k, int t) {
       if (highest_upper_bound_solution.getLayer() == k.getNumObjects() - 1) {
          if (highest_upper_bound_solution.getSelectedItemsValue() > best_solution.getSelectedItemsValue()) {
             best_solution = highest_upper_bound_solution;
+            new_best_solution = true;
          } else {
             partial_solutions.erase(partial_solutions.begin() + highest_upper_bound_index);
          }
@@ -69,24 +71,39 @@ void branchAndBound(knapsack &k, int t) {
          int curr_layer = highest_upper_bound_solution.getLayer() + 1;
 
          vector<int> temp = highest_upper_bound_solution.getSelectedItems();
+         
+         // If this partial solution was already in the list and wasn't pruned,
+         // then it implies that it had a higher upper bound than our best solution's value
+         // so it doesn't need to be checked.
          partial_solutions.push_back(BranchAndBoundNode(temp, curr_layer, k));
 
          temp.push_back(curr_layer);
          k.unSelectAll();
          k.selectList(temp);
          if (k.getCost() <= k.getCostLimit()) {
-            partial_solutions.push_back(BranchAndBoundNode(temp, curr_layer, k));
+            new_solution  = BranchAndBoundNode(temp, curr_layer, k);
+
+            // we can prune new solutions as they arrive by comparing them to the value
+            // of our previous best
+            if (new_solution.getUpperBound() > best_solution.getSelectedItemsValue()) {
+               partial_solutions.push_back(new_solution);
+            }
          }       
       }
 
-      // remove partial solutions whose upper bounds are less than or equal to our current best solution's value
-      size = partial_solutions.size();
-      for (int i = 0; i < size; i++) {
-         if (partial_solutions[i].getUpperBound() <= best_solution.getSelectedItemsValue()) {
-            partial_solutions.erase(partial_solutions.begin() + i);
-            i--;
-            size--;
+      // we only need to search through the old solutions if we get a new best solution
+      // otherwise, we only need to prune new solutions as they come in.
+      if (new_best_solution) {
+         // remove partial solutions whose upper bounds are less than or equal to our current best solution's value
+         size = partial_solutions.size();
+         for (int i = 0; i < size; i++) {
+            if (partial_solutions[i].getUpperBound() <= best_solution.getSelectedItemsValue()) {
+               partial_solutions.erase(partial_solutions.begin() + i);
+               i--;
+               size--;
+            }
          }
+         new_best_solution = false;
       }
 
       total_time = (clock() - start_time) / (double) CLOCKS_PER_SEC;

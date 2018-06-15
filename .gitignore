@@ -4,3 +4,4 @@ p*.out
 !3/*/output/
 */submission/
 *.tar.gz
+.gdb_history
