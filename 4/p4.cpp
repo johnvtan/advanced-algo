@@ -40,7 +40,7 @@ void branchAndBound(knapsack &k, int t) {
    int highest_upper_bound_index = -1;
    int size = 0;
    bool new_best_solution = false;
-   BranchAndBoundNode highest_upper_bound_solution, new_solution;
+   BranchAndBoundNode highest_upper_bound_solution;
    while ((size = partial_solutions.size())) {
       highest_upper_bound_index = -1;
       highest_upper_bound_value = 0;
@@ -57,9 +57,11 @@ void branchAndBound(knapsack &k, int t) {
 
       // check to see if we have a complete solution 
       if (highest_upper_bound_solution.getLayer() == k.getNumObjects() - 1) {
+         //cout << "got highest layer" << endl;
          if (highest_upper_bound_solution.getSelectedItemsValue() > best_solution.getSelectedItemsValue()) {
             best_solution = highest_upper_bound_solution;
             new_best_solution = true;
+            cout << "got new best" << endl;
          } else {
             partial_solutions.erase(partial_solutions.begin() + highest_upper_bound_index);
          }
@@ -81,13 +83,18 @@ void branchAndBound(knapsack &k, int t) {
          k.unSelectAll();
          k.selectList(temp);
          if (k.getCost() <= k.getCostLimit()) {
-            new_solution  = BranchAndBoundNode(temp, curr_layer, k);
+            BranchAndBoundNode new_solution(temp, curr_layer, k);
 
             // we can prune new solutions as they arrive by comparing them to the value
             // of our previous best
             if (new_solution.getUpperBound() > best_solution.getSelectedItemsValue()) {
                partial_solutions.push_back(new_solution);
-            }
+            } 
+            /*
+            else {
+               cout << "pruned new solution at layer: " << new_solution.getLayer() << endl;
+            } 
+            */
          }       
       }
 
