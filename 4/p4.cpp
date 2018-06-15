@@ -71,7 +71,7 @@ void branchAndBound(knapsack &k, int t) {
          if (next_solution.getSelectedItemsValue() > best_solution.getSelectedItemsValue()) {
             best_solution = next_solution;
             new_best_solution = true;
-            cout << "got new best" << endl;
+            //cout << "got new best" << endl;
          }
          partial_solutions.erase(partial_solutions.begin() + next_index);
 
@@ -82,7 +82,7 @@ void branchAndBound(knapsack &k, int t) {
       else {
          partial_solutions.erase(partial_solutions.begin() + next_index);
          //cout << "erasing and spawning children from soln  " << next_solution.getId() << endl; 
-
+         BranchAndBoundNode child1, child2;
          int curr_layer = next_solution.getLayer() + 1;
 
          vector<int> temp = next_solution.getSelectedItems();
@@ -90,31 +90,39 @@ void branchAndBound(knapsack &k, int t) {
          // If this partial solution was already in the list and wasn't pruned,
          // then it implies that it had a higher upper bound than our best solution's value
          // so it doesn't need to be checked.
-         partial_solutions.push_back(BranchAndBoundNode(temp, curr_layer, k));
-         child_1_index = partial_solutions.size() - 1;
+         child1 = BranchAndBoundNode(temp, curr_layer, k);
+         if (child1.getUpperBound() > best_solution.getSelectedItemsValue()) {
+            partial_solutions.push_back(BranchAndBoundNode(temp, curr_layer, k));
+            child_1_index = partial_solutions.size() - 1;
+         }
 
          temp.push_back(curr_layer);
          k.unSelectAll();
          k.selectList(temp);
          if (k.getCost() <= k.getCostLimit()) {
-            BranchAndBoundNode new_solution(temp, curr_layer, k);
+            child2 = BranchAndBoundNode(temp, curr_layer, k);
 
             // we can prune new solutions as they arrive by comparing them to the value
             // of our previous best
-            if (new_solution.getUpperBound() > best_solution.getSelectedItemsValue()) {
-               partial_solutions.push_back(new_solution);
+            if (child2.getUpperBound() > best_solution.getSelectedItemsValue()) {
+               partial_solutions.push_back(child2);
                child_2_index = partial_solutions.size() - 1;
             } 
          } 
          // then we decide which one will be our next solution to be explored - just take the one with a higher upper bound
          // might run into problems if they're at the last layer? 
-         if (child_2_index > 0) {
+         if (child_2_index > 0 && child_1_index > 0) {
             next_index = partial_solutions[child_2_index].getUpperBound() > partial_solutions[child_1_index].getUpperBound() ?
                          child_2_index :
                          child_1_index;
-         } else {
+         } else if (child_2_index > 0) {
+            next_index = child_2_index;
+         } else if (child_1_index > 0) {
             next_index = child_1_index;
-         } 
+         } else {
+            next_index = 0;
+            find_new_partial_solution = true;
+         }
       }
 
       // we only need to search through the old solutions if we get a new best solution
