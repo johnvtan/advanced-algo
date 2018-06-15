@@ -20,8 +20,9 @@ class knapsack
       int getMaxRatioIndex(void);
       int getMaxRatioUnselectedIndex(void);
       void setRatioOff(int index);
+      void resetValueCostRatio(void);
       bool allItemsOff(void);
-      float bound(void);
+      float bound(int layer);
 
    private:
       int numObjects;
@@ -273,10 +274,22 @@ bool knapsack::allItemsOff(void) {
    return true;
 }
 
+void knapsack::resetValueCostRatio(void) {
+   for (int i = 0; i < getNumObjects(); i++) {
+      valueCostRatio[i] = 1.0 * value[i] / cost[i];
+   }
+}
+
 // returns upper bound on value
-float knapsack::bound(void) {
+float knapsack::bound(int layer) {
    float upper_bound = 0;
    int index = 0;
+
+   // to calculate a tighter upper bound, we should only be able to select items that are beyond the current layer
+   for (int i = 0; i <= layer; i++) {
+      setRatioOff(i);
+   }
+
    while ((index = getMaxRatioUnselectedIndex()) >= 0) {
       if ((getCost() + getCost(index)) > getCostLimit()) {
          break;
@@ -291,5 +304,7 @@ float knapsack::bound(void) {
       upper_bound += 1.0 * ((getCostLimit() - getCost()) * valueCostRatio[getMaxRatioUnselectedIndex()]);
    }
    
+   // then make sure we reset the value cost ratio so as not to mess up future calculations
+   resetValueCostRatio();
    return upper_bound;
 }

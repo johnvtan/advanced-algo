@@ -22,7 +22,7 @@ BranchAndBoundNode::BranchAndBoundNode(vector<int> items, int current_layer, kna
     k.unSelectAll();
     k.selectList(selected_items);
     selected_items_value = k.getValue();
-    upper_bound = k.bound();
+    upper_bound = k.bound(layer);
 }
 
 BranchAndBoundNode::BranchAndBoundNode(const BranchAndBoundNode &other) {
