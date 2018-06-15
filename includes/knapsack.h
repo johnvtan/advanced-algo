@@ -286,7 +286,7 @@ float knapsack::bound(int layer) {
    int index = 0;
 
    // to calculate a tighter upper bound, we should only be able to select items that are beyond the current layer
-   for (int i = 0; i < layer; i++) {
+   for (int i = 0; i <= layer; i++) {
       setRatioOff(i);
    }
 
