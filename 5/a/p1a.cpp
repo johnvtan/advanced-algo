@@ -19,6 +19,16 @@ using namespace std;
 #include "knapsack.h"
 #include "subset.h"
 
+template <typename T>
+std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
+  if ( !v.empty() ) {
+    out << '[';
+    std::copy (v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
+    out << "\b\b]";
+  }
+  return out;
+}
+
 int randomFunc(int i) { return rand() % i; }
 
 // randomly selects or not selects each item in the knapsack
@@ -74,19 +84,19 @@ void steepestDescent(knapsack &k, int t) {
    startTime = clock();
    double totalTime = 0.0;
    time_t seed = time(0);
-   cout << "Seed is " << seed << endl;
 
-   srand(1529355919);
+   srand(seed);
    initializeRandomKnapsack(k);
 
    knapsack bestSolution = k;
 
    bool bestSolutionChanged = true;
+   vector< vector<int> > neighbors;
 
    // keep improving our solution until we reach a local maximum
    while (bestSolutionChanged) {
       bestSolutionChanged = false;
-      vector< vector<int> > neighbors = getNeighbors(k);
+      neighbors = getNeighbors(bestSolution);
 
       // check all neighbors to see if there is a better neighbor
       // if so, choose the best neighbor among them
@@ -106,16 +116,6 @@ void steepestDescent(knapsack &k, int t) {
          break;
       }
    }
-
-   vector< vector<int> > neighbors = getNeighbors(bestSolution);
-   for (int i = 0; i < neighbors.size(); i++) {
-      cout << "Neighbor " << i << ": ";
-      for (int k = 0; k < neighbors[i].size(); k++) {
-         cout << neighbors[i][k] << " ";
-      }
-      cout << endl;
-   }
-
 
    bestSolution.printSolution();
 }
