@@ -23,6 +23,7 @@ class knapsack
       void resetValueCostRatio(void);
       bool allItemsOff(void);
       float bound(int layer);
+      vector<int> getSelectedItems(void);
 
    private:
       int numObjects;
@@ -307,4 +308,17 @@ float knapsack::bound(int layer) {
    // then make sure we reset the value cost ratio so as not to mess up future calculations
    resetValueCostRatio();
    return upper_bound;
+}
+
+// returns a list of the selected indices
+vector<int> knapsack::getSelectedItems(void) {
+   vector<int> selectedItems;
+
+   for (int i = 0; i < getNumObjects(); i++) {
+      if (selected[i]) {
+         selectedItems.push_back(i);
+      }
+   }
+
+   return selectedItems;
 }
