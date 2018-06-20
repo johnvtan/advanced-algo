@@ -13,6 +13,8 @@ public:
             double survivalRate, bool minimize, 
             int (*fitness)(vector<int>));
     vector<int> nextGeneration(void);
+    void setMutationRate(double mutationRate);
+    void setCrossoverRate(double crossoverRate);
 
 private:
     // private data members
@@ -23,6 +25,10 @@ private:
     double survivalRate;
     bool minimize;
     vector< vector<int> > population;
+
+    // separately initalized parameters (mutation rate, crossover rate, % that survives each generation)
+    double mutationRate;
+    double crossoverRate;
 
     // private functions
     int (*fitness)(vector<int> p);  // must return negative number for an infeasible solution.
@@ -47,6 +53,9 @@ Genetic::Genetic(int maxVal, int maxPopSize,
     this->minimize = minimize;
     this->fitness = fitness;
 
+    this->mutationRate = 0.03;
+    this->crossoverRate = 0.7;
+
     // seed rng
     int seed = time(NULL);
     std::cout << "Seed is: " << seed << std::endl;
@@ -54,6 +63,10 @@ Genetic::Genetic(int maxVal, int maxPopSize,
 
     // then initialize population
     this->initPopulation();
+}
+
+static double getRandomDec(void) {
+    return (double) rand() / (RAND_MAX);
 }
 
 // generates next generation, returns most fit solution from that generation
@@ -76,19 +89,23 @@ vector<int> Genetic::nextGeneration(void) {
     this->population.resize(survived);
 
     while (numOffspring) {
-        if (rand() % 2) {
-            // mutate a random offspring. 
+        if (getRandomDec() <= this->mutationRate) {
             offspring = this->mutate(this->population[rand() % survived]);
-        } else {
+            if (this->fitness(offspring) >= 0) {
+                this->population.push_back(offspring);
+                numOffspring--;
+            }
+        }
+
+        if (numOffspring && getRandomDec() <= this->crossoverRate) {
             // mate two random surviving offspring. small chance that an individual mates with itself.
             offspring = this->crossover(this->population[rand() % survived], 
                                         this->population[rand() % survived]);
-        }
 
-        // check if the offspring is feasible. 
-        if (this->fitness(offspring) >= 0) {
-            this->population.push_back(offspring);
-            numOffspring--;
+            if (this->fitness(offspring) >= 0) {
+                this->population.push_back(offspring);
+                numOffspring--;
+            }
         }
     }
 
@@ -98,6 +115,22 @@ vector<int> Genetic::nextGeneration(void) {
                                 return minimize ? fitness(a) < fitness(b)
                                                 : fitness(a) > fitness(b);
                             });
+}
+
+void Genetic::setMutationRate(double mutationRate) {
+    if (mutationRate >= 0 && mutationRate <= 1) {
+        this->mutationRate = mutationRate;
+    } else {
+        cout << "Invalid mutation rate - needs to be between 0 and 1" << endl;   
+    }
+}
+
+void Genetic::setCrossoverRate(double crossoverRate) {
+    if (crossoverRate >= 0 && crossoverRate <= 1) {
+        this->crossoverRate = crossoverRate;
+    } else {
+        cout << "Invalid crossover rate: needs to be between 0 and 1" << endl;
+    }
 }
 
 // function to mate p1 and p2 at some random crossover point

@@ -61,7 +61,7 @@ void geneticAlgorithm(int t) {
    //time_t seed = time(0);
 
    int maxValue = 2;
-   int maxPopulationSize = globalK.getNumObjects();
+   int maxPopulationSize = 10 * globalK.getNumObjects();
    int minInitialPopulationSize = globalK.getNumObjects() / 2;
    int individualSize = globalK.getNumObjects();
    double survivalRate = 0.25;
@@ -71,14 +71,20 @@ void geneticAlgorithm(int t) {
 
    // run our genetic algorithm for t seconds
    vector<int> bestSolution;
+   vector<bool> selectedItems;
    while (totalTime <= t) {
       bestSolution = g.nextGeneration();
+      for (unsigned int i = 0; i < bestSolution.size(); i++) {
+         selectedItems.push_back(bestSolution[i]);
+      }
+      globalK.unSelectAll();
+      globalK.selectList(selectedItems);
+      cout << "Best val: " << globalK.getValue() << endl;
 
       // check to ensure we haven't gone over the time limit
       totalTime = (clock() - startTime) / (double) CLOCKS_PER_SEC;
    }
 
-   vector<bool> selectedItems;
    // assign the value to the int vector to the value of the bool vector (0 -> false = not selected)
    for (unsigned int i = 0; i < bestSolution.size(); i++) {
       selectedItems.push_back(bestSolution[i]);
