@@ -21,6 +21,7 @@ using namespace std;
 
 knapsack globalK;
 
+/*
 template <typename T>
 std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
   if ( !v.empty() ) {
@@ -30,6 +31,7 @@ std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
   }
   return out;
 }
+*/
 
 // determines the fitness level of the knapsack based on the vector passed in
 // return -1 if the knapsack solution is not feasible, getValue() otherwise
@@ -56,7 +58,7 @@ void geneticAlgorithm(int t) {
    clock_t startTime;
    startTime = clock();
    double totalTime = 0.0;
-   time_t seed = time(0);
+   //time_t seed = time(0);
 
    int maxValue = 2;
    int maxPopulationSize = globalK.getNumObjects();
@@ -68,13 +70,24 @@ void geneticAlgorithm(int t) {
    Genetic g(maxValue, maxPopulationSize, minInitialPopulationSize, individualSize, survivalRate, minimize, fitness);
 
    // run our genetic algorithm for t seconds
+   vector<int> bestSolution;
    while (totalTime <= t) {
-      globalK = g.nextGeneration();
+      bestSolution = g.nextGeneration();
 
       // check to ensure we haven't gone over the time limit
       totalTime = (clock() - startTime) / (double) CLOCKS_PER_SEC;
    }
 
+   vector<bool> selectedItems;
+
+   // assign the value to the int vector to the value of the bool vector (0 -> false = not selected)
+   for (unsigned int i = 0; i < bestSolution.size(); i++) {
+      selectedItems.push_back(bestSolution[i]);
+   }
+
+   globalK.unSelectAll();
+   globalK.selectList(bestSolution);
+   
    globalK.printSolution();
 }
 
