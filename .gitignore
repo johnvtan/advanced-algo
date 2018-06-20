@@ -5,3 +5,4 @@ p*.out
 */submission/
 *.tar.gz
 .gdb_history
+*.dSYM/
