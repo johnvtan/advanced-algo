@@ -19,6 +19,18 @@ using namespace std;
 #include "knapsack.h"
 #include "Genetic.h"
 
+knapsack globalK;
+
+template <typename T>
+std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
+  if ( !v.empty() ) {
+    out << '[';
+    std::copy (v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
+    out << "\b\b]";
+  }
+  return out;
+}
+
 int randomFunc(int i) { return rand() % i; }
 
 // randomly selects or not selects each item in the knapsack
@@ -67,47 +79,51 @@ vector< vector<int> > getNeighbors(knapsack &k) {
    return neighbors;
 }
 
-// performs steepest descent search on the knapsack until 
-// no better neighbor exists
-void steepestDescent(knapsack &k, int t) {
+// determines the fitness level of the knapsack based on the vector passed in
+// return -1 if the knapsack solution is not feasible, getValue() otherwise
+int fitness(vector<int> p) {
+   vector<bool> selectedItems;
+
+   // assign the value to the int vector to the value of the bool vector (0 -> false = not selected)
+   for (unsigned int i = 0; i < p.size(); i++) {
+      selectedItems.push_back(p[i]);
+   }
+
+   globalK.unSelectAll();
+   globalK.selectList(selectedItems);
+
+   if (globalK.getCost() > globalK.getCostLimit()) {
+      return -1;
+   }
+
+   return globalK.getValue();
+}
+
+// performs a genetic algorithm on the knapsack to try and find a best solution
+void geneticAlgorithm(int t) {
    clock_t startTime;
    startTime = clock();
    double totalTime = 0.0;
    time_t seed = time(0);
 
-   srand(seed);
-   initializeRandomKnapsack(k);
+   int maxValue = 2;
+   int maxPopulationSize = globalK.getNumObjects();
+   int minInitialPopulationSize = globalK.getNumObjects() / 2;
+   int individualSize = globalK.getNumObjects();
+   double survivalRate = 0.25;
+   bool minimize = false;
 
-   knapsack bestSolution = k;
+   Genetic g(maxValue, maxPopulationSize, minInitialPopulationSize, individualSize, survivalRate, minimize, fitness);
 
-   bool bestSolutionChanged = true;
-   vector< vector<int> > neighbors;
-
-   // keep improving our solution until we reach a local maximum
-   while (bestSolutionChanged) {
-      bestSolutionChanged = false;
-      neighbors = getNeighbors(bestSolution);
-
-      // check all neighbors to see if there is a better neighbor
-      // if so, choose the best neighbor among them
-      for (int i = 0; i < neighbors.size(); i++) {
-         k.unSelectAll();
-         k.selectList(neighbors[i]);
-
-         if (k.getValue() > bestSolution.getValue()) {
-            bestSolutionChanged = true;
-            bestSolution = k;
-         }
-      }
+   // run our genetic algorithm for t seconds
+   while (totalTime <= t) {
+      globalK = g.nextGeneration();
 
       // check to ensure we haven't gone over the time limit
       totalTime = (clock() - startTime) / (double) CLOCKS_PER_SEC;
-      if (totalTime >= t) {
-         break;
-      }
    }
 
-   bestSolution.printSolution();
+   globalK.printSolution();
 }
 
 int main(int argc, char **argv)
@@ -133,9 +149,20 @@ int main(int argc, char **argv)
    try
    {
       //cout << "Reading knapsack instance" << endl;
-      knapsack k(fin);
+      globalK = knapsack(fin);
 
-      steepestDescent(k, 300);
+      vector<int> v;
+      v.push_back(0);
+      v.push_back(0);
+      v.push_back(1);
+      v.push_back(0);
+
+      cout << "Vector v " << v << endl;
+
+      cout << fitness(v) << endl;
+      globalK.printSolution();
+
+      geneticAlgorithm(300);
    }    
 
    catch (indexRangeError &ex) 

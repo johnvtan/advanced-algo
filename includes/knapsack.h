@@ -3,6 +3,7 @@
 class knapsack
 {
    public:
+      knapsack();
       knapsack(ifstream &fin);
       knapsack(const knapsack &);
       int getCost(int) const;
@@ -16,6 +17,7 @@ class knapsack
       void unSelect(int);
       bool isSelected(int) const;
       void selectList(vector<int> list);
+      void selectList(vector<bool> list); 
       void unSelectAll(void);
       int getMaxRatioIndex(void);
       int getMaxRatioUnselectedIndex(void);
@@ -34,8 +36,11 @@ class knapsack
       vector<bool> selected;
       int totalValue;
       int totalCost;
-      int layer;
 };
+
+knapsack::knapsack() {
+
+}
 
 knapsack::knapsack(ifstream &fin)
 // Construct a new knapsack instance using the data in fin.
@@ -220,9 +225,20 @@ bool knapsack::isSelected(int i) const
    return selected[i];
 }
 
-void knapsack::selectList(vector <int> list) {
+void knapsack::selectList(vector<int> list) {
    for (unsigned int i = 0; i < list.size(); i++) {
       select(list[i]);
+   } 
+}
+
+void knapsack::selectList(vector<bool> list) {
+   for (unsigned int i = 0; i < list.size(); i++) {
+      if (list[i]) {
+         select(i);
+      }
+      else {
+         unSelect(i);
+      }
    } 
 }
 
