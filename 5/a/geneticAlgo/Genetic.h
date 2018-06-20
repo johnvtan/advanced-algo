@@ -86,7 +86,7 @@ vector<int> Genetic::nextGeneration(void) {
         }
 
         // check if the offspring is feasible. 
-        if (this->fitness(offspring) > 0) {
+        if (this->fitness(offspring) >= 0) {
             this->population.push_back(offspring);
             numOffspring--;
         }
@@ -152,7 +152,7 @@ void Genetic::initPopulation(void) {
     vector<int> generated;
     while (feasibleSolutionCount < this->minInitPopSize) {
         generated = this->generateRandomIndiv();
-        if (fitness(generated) > 0) {
+        if (fitness(generated) >= 0) {
             this->population[feasibleSolutionCount++] = generated;
         }
     }

@@ -79,14 +79,12 @@ void geneticAlgorithm(int t) {
    }
 
    vector<bool> selectedItems;
-
    // assign the value to the int vector to the value of the bool vector (0 -> false = not selected)
    for (unsigned int i = 0; i < bestSolution.size(); i++) {
       selectedItems.push_back(bestSolution[i]);
    }
-
    globalK.unSelectAll();
-   globalK.selectList(bestSolution);
+   globalK.selectList(selectedItems);
    
    globalK.printSolution();
 }
