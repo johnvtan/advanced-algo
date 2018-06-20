@@ -31,54 +31,6 @@ std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
   return out;
 }
 
-int randomFunc(int i) { return rand() % i; }
-
-// randomly selects or not selects each item in the knapsack
-// so long as the knapsack has a viable cost
-void initializeRandomKnapsack(knapsack &k) {
-   k.unSelectAll();
-
-   vector<int> itemOrder;
-   for (int i = 0; i < k.getNumObjects(); i++) {
-      itemOrder.push_back(i);
-   }
-
-   // order the items in a random order
-   random_shuffle(itemOrder.begin(), itemOrder.end(), randomFunc);
-
-   for (int i = 0; i < k.getNumObjects(); i++) {
-      // if we choose a random number between 0 and 1, and it's 1, select the item
-      if (rand() % 2) {
-         if (k.getCost() + k.getCost(itemOrder[i]) <= k.getCostLimit()) {
-            k.select(itemOrder[i]);
-         }
-      }
-   }
-}
-
-// gets neighboring solutions to the current knapsack by
-// switching on/off every item in the knapsack
-vector< vector<int> > getNeighbors(knapsack &k) {
-   vector< vector<int> > neighbors;
-
-   for (int i = 0; i < k.getNumObjects(); i++) {
-      if (k.isSelected(i)) {
-         k.unSelect(i);
-         neighbors.push_back(k.getSelectedItems());
-         k.select(i);
-      }
-      else {
-         if (k.getCost() + k.getCost(i) <= k.getCostLimit()) {
-            k.select(i);
-            neighbors.push_back(k.getSelectedItems());
-            k.unSelect(i);
-         }
-      }
-   }
-
-   return neighbors;
-}
-
 // determines the fitness level of the knapsack based on the vector passed in
 // return -1 if the knapsack solution is not feasible, getValue() otherwise
 int fitness(vector<int> p) {
