@@ -151,17 +151,6 @@ int main(int argc, char **argv)
       //cout << "Reading knapsack instance" << endl;
       globalK = knapsack(fin);
 
-      vector<int> v;
-      v.push_back(0);
-      v.push_back(0);
-      v.push_back(1);
-      v.push_back(0);
-
-      cout << "Vector v " << v << endl;
-
-      cout << fitness(v) << endl;
-      globalK.printSolution();
-
       geneticAlgorithm(300);
    }    
 
