@@ -2,7 +2,7 @@ TARGET := p1a
 SRCS := $(TARGET).cpp
 CC := g++
 INCLUDES := ../../../includes 
-CFLAGS := -g -Wall -Wextra -Wno-deprecated $(foreach incdir, $(INCLUDES), -I$(incdir))
+CFLAGS := -g -std=c++11 -Wall -Wextra -Wno-deprecated $(foreach incdir, $(INCLUDES), -I$(incdir))
 LFLAGS := 
 
 .PHONY: clean

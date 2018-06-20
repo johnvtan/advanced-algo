@@ -17,17 +17,7 @@ using namespace std;
 #include "d_except.h"
 #include "d_matrix.h"
 #include "knapsack.h"
-#include "subset.h"
-
-template <typename T>
-std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
-  if ( !v.empty() ) {
-    out << '[';
-    std::copy (v.begin(), v.end(), std::ostream_iterator<T>(out, ", "));
-    out << "\b\b]";
-  }
-  return out;
-}
+#include "Genetic.h"
 
 int randomFunc(int i) { return rand() % i; }
 
