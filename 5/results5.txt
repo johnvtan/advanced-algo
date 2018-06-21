@@ -1,0 +1,20 @@
+KANPSACK:
+
+
+STEEPEST DESCENT:
+Our steepest descent algorithm for knapsack chooses a random initial solution where a random subset of the items is selected, so long as the knapsack is feasible. There are N neighbors for knapsack, where N is the amount of items in the input file. For one neighbor, one of the items is switched (either selected to unselected, or vice-versa). Each neighbor switches the value of a different item in the knapsack. The neighbor is only added to the list of neighbors if it is a feasible solution. In order to select the "best" neighbor, the knapsack finds the neighbor that produces the highest value, until there is no better neighbor to choose from.
+
+Steepest descent knapsack works virtually instantaneously. So, in terms of time efficiency, it is faster than any algorithm (besides perhaps greedy). In terms of solution accuracy, it performs slightly better than the greedy approach for every input size, but slightly worse than ILP for every input size. It is surprising how effect such a simple/quick algorithm can be when stacked up against the industrial-strength ILP.
+
+
+-----------------------------------------------------------------------------
+
+COLORING:
+
+
+STEEPEST DESCENT:
+Our steepest descent algorithm for coloring initializes the graph by selecting a random color for every node. There are N neighbors chosen for coloring, where N is the amount of nodes. Similarly to knapsack, each neighbor has one node that is altered to a random color. Each neighbor has a different node whose color is altered. In order to select the "best" neighbor, the graph finds a neighbor that creates fewer conflicts, until there is no better neighbor left to choose.
+
+Steepest descent graph coloring works relatively quickly, as the input files of size 192 take about ten seconds to run. So, this algorithm comes second to the greedy approach in terms of time efficiency. When comparing the solutions to other algorithms, however, performance is much worse for steepest descent. 192 nodes and 6 colors creates around 10 conflicts , while 192 nodes and 7 colors also creates around 10 conflicts. No other algorithm finds close to this many conflicts, except for the exhaustive approach at large input sizes. The reason there might be as many conflicts with more available colors is due to the randomness of the neighbors. 
+
+This steepest descent algorithm finds a solution far from optimal because, once the number of conflicts gets low, there are only a select few nodes whose colors can be changed to a select few colors in order to decrease the conflicts further. Therefor, with semi-random neighbors, as conflicts decrease, the likelihood of randomly selecting neighbors that decrease the conflicts even further is rare.
