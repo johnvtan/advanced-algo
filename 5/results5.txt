@@ -1,3 +1,5 @@
+Team Members: John Tan, Emerson Boyd
+
 KANPSACK:
 
 
@@ -6,6 +8,20 @@ Our steepest descent algorithm for knapsack chooses a random initial solution wh
 
 Steepest descent knapsack works virtually instantaneously. So, in terms of time efficiency, it is faster than any algorithm (besides perhaps greedy). In terms of solution accuracy, it performs slightly better than the greedy approach for every input size, but slightly worse than ILP for every input size. It is surprising how effect such a simple/quick algorithm can be when stacked up against the industrial-strength ILP.
 
+GENETIC ALGORITHM:
+Because the genetic algorithm is a very general framework that assumes very little and works across many problem domains, we aimed to make our implementation of the genetic algorithm general. We created a class called Genetic (defined in Genetic.h) that exposes a constructor and a single function called nextGeneration(). The constructor takes in a number of arguments that define the parameters for the genetic algorithm, including the max population size, the size of the individual in the population, and the survival rate per generation. The user must also specify the largest number that an element in each individual vector can hold. In the case of knapsack, this number is 2 - the element is 0 if the item is not selected, 1 if it is.
+
+The constructor also requires a pointer to the user-defined fitness function, which is used to evaluate each individual in the population, and a boolean indicating whether we want to minimize or maximize this fitness function. The fitness function needs to map a vector of integers (i.e., an individual in the population) to a single positive integer if the solution is valid. In the case that the individual supplied to the fitness function is invalid or infeasible, it must return -1. In the case of knapsack, the fitness function was the value of the items in the knapsack, or -1 if the items exceeded the cost limit.
+
+When the Genetic class is initialzied, it generates an initial population randomly. We require that all the individuals in the initial population are valid, which we verify by checking that the fitness function of each generated individual is not -1. 
+
+On each call to nextGeneration(), we sort the population by either ascending or descending fitness, depending on whether we aim to minimize or maximize the fitness function. We then kill off all the individuals under the survival threshold (determined by survivalRate), and let those who survive either mutate or crossover. Our current implementation simply gives a 50/50 chance to whether it chooses to mutate or crossover, but in theory these two can be independent. Each time it chooses to either mutate or crossover, it chooses some random individual or individuals to mutate or mate. Then these offspring that are produced are added to the population if they are feasible, stopping when the population reaches maxPopulationSize. nextGeneration() returns the individual with the highest fitness in that generation.
+
+It is difficult to assess the worst-case runtime of the genetic algorithm due to its inherent randomness. In theory, we could get stuck forever trying to initialize a population if we continually generate infeasible individuals. The same could be said for when we create offspring each generation. However, in practice, each generation runs relatively quickly.
+
+Overall, our implementation of the genetic algorithm did not perform very well. It consistently performed worse than the greedy implementation across all instances. This may be due to our basic and relatively crude implementation of genetic algorithms.
+
+We could improve our genetic algorithm by tinkering with the supplied parameters - in particular, survival rate and population size. These were both arbitrarily chosen, but the choices work reasonably well to solve the problem. In addition, we could also change our survival threshold to be probabilistic instead of a hard cutoff. We could also run steepest descent after finding a genetic algorithm solution to ensure that we find the local minimum. We could also run for a longer time. All in all, there are any number of tweaks to be made that could improve the performance of the genetic algorithm, but finding these would require a great deal of trial and error. 
 
 -----------------------------------------------------------------------------
 
@@ -17,4 +33,11 @@ Our steepest descent algorithm for coloring initializes the graph by selecting a
 
 Steepest descent graph coloring works relatively quickly, as the input files of size 192 take about ten seconds to run. So, this algorithm comes second to the greedy approach in terms of time efficiency. When comparing the solutions to other algorithms, however, performance is much worse for steepest descent. 192 nodes and 6 colors creates around 10 conflicts , while 192 nodes and 7 colors also creates around 10 conflicts. No other algorithm finds close to this many conflicts, except for the exhaustive approach at large input sizes. The reason there might be as many conflicts with more available colors is due to the randomness of the neighbors. 
 
-This steepest descent algorithm finds a solution far from optimal because, once the number of conflicts gets low, there are only a select few nodes whose colors can be changed to a select few colors in order to decrease the conflicts further. Therefor, with semi-random neighbors, as conflicts decrease, the likelihood of randomly selecting neighbors that decrease the conflicts even further is rare.
+This steepest descent algorithm finds a solution far from optimal because, once the number of conflicts gets low, there are only a select few nodes whose colors can be changed to a select few colors in order to decrease the conflicts further. Therefore, with semi-random neighbors, as conflicts decrease, the likelihood of randomly selecting neighbors that decrease the conflicts even further is rare.
+
+GENETIC ALGORITHM:
+The genetic algorithm implementation is identical to the one used for knapsack. By supplying different parameters, we can use that implementation to solve coloring as well. For coloring, each individual is a vector with one element per node in the graph. The max value of each element is the maximum number of colors. The fitness function is the number of conflicts in the graph (there are no infeasible solutions) and the genetic algorithm is specified to minimize the fitness function.
+
+Again, this implementation of graph coloring works relatively poorly since we arbitrarily chose parameter values and did not tinker with them too much. It is possible that small changes in the parameter values could yield much better performance. 
+
+However, despite its relatively poor performance, we were pleased to see the generality of the genetic algorithm. The Genetic class used was not changed at all and by only changing a few parameter values and the fitness function we were able to quickly and easily apply this framework to solve an entirely different problem. This demonstrates the generality of genetic algorithms and local search in general.

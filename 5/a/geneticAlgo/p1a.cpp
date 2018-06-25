@@ -70,9 +70,15 @@ void geneticAlgorithm(int t) {
    Genetic g(maxValue, maxPopulationSize, minInitialPopulationSize, individualSize, survivalRate, minimize, fitness);
 
    // run our genetic algorithm for t seconds
-   vector<int> bestSolution;
+   vector<int> bestSolution, thisSolution;
+   int highestValue = 0;
    while (totalTime <= t) {
-      bestSolution = g.nextGeneration();
+      thisSolution = g.nextGeneration();
+      if (fitness(thisSolution) > highestValue) {
+         //cout << "new best: " << fitness(thisSolution) << endl;
+         bestSolution = thisSolution;
+         highestValue = fitness(thisSolution);
+      }
 
       // check to ensure we haven't gone over the time limit
       totalTime = (clock() - startTime) / (double) CLOCKS_PER_SEC;

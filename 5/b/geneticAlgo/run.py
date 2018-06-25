@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os
 
-rel_path = '../../../knapsack-instances/'
-problem = 'p1a'
+rel_path = '../../../color-instances/'
+problem = 'p1b'
 
 os.system('mkdir -p output')
 os.system('rm output/*')    # get rid of existing output from previous runs
